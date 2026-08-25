@@ -256,6 +256,9 @@ export default function AdminModeracija() {
     const { error } = await supabase.from("products").delete().eq("id", p.id);
 
     if (!error) {
+      if (p.seller_id) {
+        await supabase.rpc("increment_sales_count", { seller_id: p.seller_id });
+      }
       await supabase.from("activity_logs").insert({
         type: "parduota",
         username: sellerProfile?.username || "Vartotojas",
