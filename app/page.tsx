@@ -313,7 +313,9 @@ export default function Home() {
       const updated = { ...p, views_count: (p.views_count || 0) + 1 };
       setSelected(updated);
       setProducts((prev) => prev.map((x) => (x.id === p.id ? { ...x, views_count: updated.views_count } : x)));
-      supabase.rpc("increment_views", { listing_id: p.id });
+      supabase.rpc("increment_views", { listing_id: p.id }).then(({ error }) => {
+        if (error) console.error("increment_views klaida:", error.message, error);
+      });
     } else {
       setSelected(p);
     }
