@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { supabase } from "../../../lib/supabase";
+import { supabase } from "../../lib/supabase";
 
 type PendingProduct = {
   id: string;
@@ -214,6 +214,7 @@ export default function AdminModeracija() {
         product_title: p.title,
         price: p.price,
         product_id: null,
+        category: p.category,
       });
       setDeleteRequests((prev) => prev.filter((x) => x.id !== p.id));
     } else {

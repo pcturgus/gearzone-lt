@@ -10,7 +10,26 @@ type ActivityEvent = {
   product_title: string | null;
   price: number | null;
   old_price: number | null;
+  category: string | null;
   created_at: string;
+};
+
+const categoryImages: Record<string, string> = {
+  "Vaizdo plokštės": "vaizdo-plokstes.png",
+  "Procesoriai": "procesoriai.png",
+  "Pagrindinės plokštės": "pagrindines-plokstes.png",
+  "Operatyvioji atmintis": "ram.png",
+  "SSD / HDD": "ssd-hdd.png",
+  "Maitinimo blokai": "maitinimo-blokai.png",
+  "Korpusai": "korpusai.png",
+  "Aušintuvai": "ausintuvai.png",
+  "Pelės": "peles.png",
+  "Klaviatūros": "klaviaturos.png",
+  "Pelių kilimėliai": "peliu-kilimeliai.png",
+  "Ausinės / mikrofonai": "ausines-mikrofonai.png",
+  "Monitoriai": "monitoriai.png",
+  "Kėdės ir stalai": "kedes-stalai.png",
+  "Tinklo įranga": "tinklo-iranga.png",
 };
 
 function timeAgo(dateStr: string) {
@@ -23,11 +42,47 @@ function timeAgo(dateStr: string) {
   return `prieš ${Math.floor(hours / 24)} d.`;
 }
 
-function eventIcon(type: ActivityEvent["type"]) {
-  if (type === "naujas_narys") return "👋";
-  if (type === "naujas_skelbimas") return "🆕";
-  if (type === "kainos_kritimas") return "📉";
-  return "✅";
+function EventThumb({ event }: { event: ActivityEvent }) {
+  const imageFile = event.category ? categoryImages[event.category] : null;
+
+  if (imageFile) {
+    return (
+      <div
+        style={{ width: "34px", height: "34px", minWidth: "34px", borderRadius: "8px", overflow: "hidden", background: "#F0F1F6" }}
+      >
+        <img
+          src={`/categories/${imageFile}`}
+          alt=""
+          style={{ width: "34px", height: "34px", objectFit: "cover" }}
+          onError={(e) => {
+            e.currentTarget.style.display = "none";
+          }}
+        />
+      </div>
+    );
+  }
+
+  // atsarginis neutralus avataras (be jokio emoji) - vartotojo vardo raidė
+  const letter = (event.username || "?").charAt(0).toUpperCase();
+  return (
+    <div
+      style={{
+        width: "34px",
+        height: "34px",
+        minWidth: "34px",
+        borderRadius: "8px",
+        background: "#EEF0FF",
+        color: "#5B4FE5",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: "13px",
+        fontWeight: 800,
+      }}
+    >
+      {letter}
+    </div>
+  );
 }
 
 export default function LiveFeed() {
@@ -38,9 +93,9 @@ export default function LiveFeed() {
     async function load() {
       const { data } = await supabase
         .from("activity_logs")
-        .select("id, type, username, product_title, price, old_price, created_at")
+        .select("id, type, username, product_title, price, old_price, category, created_at")
         .order("created_at", { ascending: false })
-        .limit(15);
+        .limit(10);
       setEvents(data || []);
       setLoading(false);
     }
@@ -52,7 +107,7 @@ export default function LiveFeed() {
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "activity_logs" },
         (payload) => {
-          setEvents((prev) => [payload.new as ActivityEvent, ...prev].slice(0, 20));
+          setEvents((prev) => [payload.new as ActivityEvent, ...prev].slice(0, 10));
         }
       )
       .subscribe();
@@ -69,8 +124,7 @@ export default function LiveFeed() {
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500" />
         </span>
-        <span className="text-sm font-extrabold">LIVE</span>
-        <span className="text-xs text-[#6B7280]">· Bendruomenės pulsas</span>
+        <span className="text-sm font-extrabold">Bendruomenės pulsas</span>
       </div>
 
       {loading ? (
@@ -78,36 +132,34 @@ export default function LiveFeed() {
       ) : events.length === 0 ? (
         <p className="text-xs text-[#6B7280]">Kol kas jokios veiklos.</p>
       ) : (
-        <div className="flex flex-col gap-2.5 max-h-[420px] overflow-y-auto">
+        <div className="flex flex-col gap-3">
           {events.map((e) => (
-            <div key={e.id} className="flex items-start gap-2 text-xs" style={{ animation: "feedFadeIn 0.4s ease" }}>
-              <span className="text-sm shrink-0">{eventIcon(e.type)}</span>
+            <div key={e.id} className="flex items-center gap-2.5" style={{ animation: "feedFadeIn 0.4s ease" }}>
+              <EventThumb event={e} />
               <div className="flex-1 min-w-0">
-                {e.type === "naujas_narys" && (
-                  <p className="text-[#374151] leading-snug">
-                    <span className="font-bold">{e.username || "Vartotojas"}</span> prisijungė prie bendruomenės
-                  </p>
-                )}
-                {e.type === "naujas_skelbimas" && (
-                  <p className="text-[#374151] leading-snug">
-                    <span className="font-bold">{e.username || "Vartotojas"}</span> įkėlė{" "}
-                    <span className="font-semibold">{e.product_title}</span> – <span className="font-bold text-[#5B4FE5]">{e.price} €</span>
-                  </p>
-                )}
-                {e.type === "kainos_kritimas" && (
-                  <p className="text-[#374151] leading-snug">
-                    <span className="font-bold">{e.username || "Vartotojas"}</span> sumažino{" "}
-                    <span className="font-semibold">{e.product_title}</span> kainą:{" "}
-                    <span className="line-through text-[#9CA3AF]">{e.old_price} €</span> ➔{" "}
-                    <span className="font-bold text-[#5B4FE5]">{e.price} €</span>
-                  </p>
-                )}
-                {e.type === "parduota" && (
-                  <p className="text-[#374151] leading-snug">
-                    <span className="font-bold">{e.username || "Vartotojas"}</span> pardavė{" "}
-                    <span className="font-semibold">{e.product_title}</span>
-                  </p>
-                )}
+                <p className="text-xs leading-snug">
+                  <span className="font-bold text-[#12172B]">{e.username || "Vartotojas"}</span>{" "}
+                  {e.type === "naujas_narys" && <span className="text-[#6B7280]">prisijungė prie bendruomenės</span>}
+                  {e.type === "naujas_skelbimas" && (
+                    <>
+                      <span className="text-[#6B7280]">įkėlė</span>{" "}
+                      <span className="font-semibold text-[#5B4FE5]">{e.product_title}</span>
+                    </>
+                  )}
+                  {e.type === "kainos_kritimas" && (
+                    <>
+                      <span className="text-[#6B7280]">sumažino</span>{" "}
+                      <span className="font-semibold text-[#5B4FE5]">{e.product_title}</span>{" "}
+                      <span className="text-[#6B7280]">kainą</span>
+                    </>
+                  )}
+                  {e.type === "parduota" && (
+                    <>
+                      <span className="text-[#6B7280]">pardavė</span>{" "}
+                      <span className="font-semibold text-[#5B4FE5]">{e.product_title}</span>
+                    </>
+                  )}
+                </p>
                 <p className="text-[10px] text-[#9CA3AF] mt-0.5">{timeAgo(e.created_at)}</p>
               </div>
             </div>

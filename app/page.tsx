@@ -42,6 +42,7 @@ type Product = {
   seller_id: string | null;
   created_at: string;
   status: string;
+  views_count: number;
   seller: Seller;
 };
 
@@ -132,6 +133,12 @@ export default function Home() {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState("newest");
+  const [priceFilter, setPriceFilter] = useState("any");
+  const [customMinPrice, setCustomMinPrice] = useState("");
+  const [customMaxPrice, setCustomMaxPrice] = useState("");
+  const [conditionFilter, setConditionFilter] = useState("any");
+  const [cityFilter, setCityFilter] = useState("visi");
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
@@ -196,7 +203,7 @@ export default function Home() {
       const { data } = await supabase
         .from("products")
         .select(
-          "id, title, price, old_price, category, condition, city, description, photos, seller_id, created_at, status, seller:profiles(username, sales_count)"
+          "id, title, price, old_price, category, condition, city, description, photos, seller_id, created_at, status, views_count, seller:profiles(username, sales_count)"
         )
         .order("created_at", { ascending: false });
       const normalized = (data || []).map((p: any) => ({
@@ -683,11 +690,41 @@ export default function Home() {
     openThread(conv);
   }
 
-  const filtered = products.filter((p) => {
-    const matchesCategory = !activeCategory || p.category === activeCategory;
-    const matchesSearch = !search || p.title.toLowerCase().includes(search.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
+  const filtered = products
+    .filter((p) => {
+      const matchesCategory = !activeCategory || p.category === activeCategory;
+      const matchesSearch = !search || p.title.toLowerCase().includes(search.toLowerCase());
+
+      let matchesPrice = true;
+      if (priceFilter === "under50") matchesPrice = p.price <= 50;
+      else if (priceFilter === "50-100") matchesPrice = p.price > 50 && p.price <= 100;
+      else if (priceFilter === "100-250") matchesPrice = p.price > 100 && p.price <= 250;
+      else if (priceFilter === "250-500") matchesPrice = p.price > 250 && p.price <= 500;
+      else if (priceFilter === "500-1000") matchesPrice = p.price > 500 && p.price <= 1000;
+      else if (priceFilter === "1000+") matchesPrice = p.price > 1000;
+      else if (priceFilter === "custom") {
+        const min = customMinPrice ? Number(customMinPrice) : 0;
+        const max = customMaxPrice ? Number(customMaxPrice) : Infinity;
+        matchesPrice = p.price >= min && p.price <= max;
+      }
+
+      const matchesCondition = conditionFilter === "any" || p.condition === conditionFilter;
+
+      const matchesCity =
+        cityFilter === "visi" ||
+        cityFilter === "lietuva" ||
+        (p.city || "").trim().toLowerCase() === cityFilter.toLowerCase();
+
+      return matchesCategory && matchesSearch && matchesPrice && matchesCondition && matchesCity;
+    })
+    .sort((a, b) => {
+      if (sortBy === "newest") return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      if (sortBy === "oldest") return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+      if (sortBy === "cheapest") return a.price - b.price;
+      if (sortBy === "expensive") return b.price - a.price;
+      if (sortBy === "views") return (b.views_count || 0) - (a.views_count || 0);
+      return 0;
+    });
 
   const latest = products.slice(0, 5);
   const selectedPhotos = selected?.photos && selected.photos.length > 0 ? selected.photos : [];
@@ -884,6 +921,121 @@ export default function Home() {
               <circle cx="242" cy="160" r="16" fill="#111827" stroke="#22D3EE" strokeWidth="1.5" />
               <circle cx="242" cy="160" r="4" fill="#22D3EE" />
             </svg>
+          </div>
+        </div>
+      </section>
+
+      {/* FILTRŲ JUOSTA */}
+      <section className="max-w-[1440px] mx-auto px-8 pb-4">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+            <span className="text-xs font-semibold text-[#6B7280]">Rikiuoti:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
+            >
+              <option value="newest">Naujausi</option>
+              <option value="oldest">Seniausi</option>
+              <option value="cheapest">Pigiausi</option>
+              <option value="expensive">Brangiausi</option>
+              <option value="views">Daugiausiai peržiūrų</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+            <span className="text-xs font-semibold text-[#6B7280]">Kategorija:</span>
+            <select
+              value={activeCategory || "Visos"}
+              onChange={(e) => setActiveCategory(e.target.value === "Visos" ? null : e.target.value)}
+              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
+            >
+              <option value="Visos">Visos</option>
+              {categories.map((c) => (
+                <option key={c.name} value={c.name}>{c.name}</option>
+              ))}
+              <option value="Kiti komponentai">Kiti komponentai</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+            <span className="text-xs font-semibold text-[#6B7280]">Kaina:</span>
+            <select
+              value={priceFilter}
+              onChange={(e) => setPriceFilter(e.target.value)}
+              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
+            >
+              <option value="any">Bet kokia</option>
+              <option value="under50">Iki 50 €</option>
+              <option value="50-100">50–100 €</option>
+              <option value="100-250">100–250 €</option>
+              <option value="250-500">250–500 €</option>
+              <option value="500-1000">500–1000 €</option>
+              <option value="1000+">1000 €+</option>
+              <option value="custom">Pasirinkti kainą</option>
+            </select>
+            {priceFilter === "custom" && (
+              <>
+                <input
+                  type="number"
+                  placeholder="Min €"
+                  value={customMinPrice}
+                  onChange={(e) => setCustomMinPrice(e.target.value)}
+                  className="w-16 text-xs border-l border-[#E4E7EE] pl-2 outline-none"
+                />
+                <input
+                  type="number"
+                  placeholder="Max €"
+                  value={customMaxPrice}
+                  onChange={(e) => setCustomMaxPrice(e.target.value)}
+                  className="w-16 text-xs border-l border-[#E4E7EE] pl-2 outline-none"
+                />
+              </>
+            )}
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+            <span className="text-xs font-semibold text-[#6B7280]">Būklė:</span>
+            <select
+              value={conditionFilter}
+              onChange={(e) => setConditionFilter(e.target.value)}
+              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
+            >
+              <option value="any">Bet kokia</option>
+              <option value="naujas">Nauja</option>
+              <option value="naudotas">Naudota</option>
+              <option value="atidaryta">Atidaryta / mažai naudota</option>
+              <option value="defektas">Su defektu</option>
+            </select>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+            <span className="text-xs font-semibold text-[#6B7280]">Vieta:</span>
+            <select
+              value={cityFilter}
+              onChange={(e) => setCityFilter(e.target.value)}
+              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
+            >
+              <option value="visi">Visi miestai</option>
+              <option value="lietuva">Visa Lietuva</option>
+              <option value="Vilnius">Vilnius</option>
+              <option value="Kaunas">Kaunas</option>
+              <option value="Klaipėda">Klaipėda</option>
+              <option value="Šiauliai">Šiauliai</option>
+              <option value="Panevėžys">Panevėžys</option>
+              <option value="Alytus">Alytus</option>
+              <option value="Marijampolė">Marijampolė</option>
+              <option value="Mažeikiai">Mažeikiai</option>
+              <option value="Jonava">Jonava</option>
+              <option value="Utena">Utena</option>
+              <option value="Kėdainiai">Kėdainiai</option>
+              <option value="Telšiai">Telšiai</option>
+              <option value="Tauragė">Tauragė</option>
+              <option value="Ukmergė">Ukmergė</option>
+              <option value="Palanga">Palanga</option>
+              <option value="Kretinga">Kretinga</option>
+              <option value="Kita">Kita</option>
+            </select>
           </div>
         </div>
       </section>
