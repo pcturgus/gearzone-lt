@@ -88,8 +88,8 @@ export default function Taisykles() {
         <section>
           <h2 className="text-lg font-extrabold text-[#12172B] mb-2">8. Kontaktai</h2>
           <p>
-            Klausimus ar skundus dėl šių taisyklių galite pateikti per Platformos susisiekimo formą arba el. paštu,
-            nurodytu Platformos kontaktinėje informacijoje.
+            Klausimus ar skundus dėl šių taisyklių galite pateikti el. paštu{" "}
+            <a href="mailto:pcturgus@outlook.com" className="text-[#5B4FE5] font-semibold hover:underline">pcturgus@outlook.com</a>.
           </p>
         </section>
       </div>

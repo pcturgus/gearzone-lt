@@ -87,8 +87,9 @@ export default function PrivatumoPolitika() {
         <section>
           <h2 className="text-lg font-extrabold text-[#12172B] mb-2">8. Kontaktai</h2>
           <p>
-            Dėl klausimų, susijusių su asmens duomenų tvarkymu, ar norėdamas pasinaudoti savo teisėmis, susisiek su
-            mumis per Platformos susisiekimo formą arba el. paštu, nurodytu Platformos kontaktinėje informacijoje.
+            Dėl klausimų, susijusių su asmens duomenų tvarkymu, ar norėdamas pasinaudoti savo teisėmis, susisiek
+            el. paštu{" "}
+            <a href="mailto:pcturgus@outlook.com" className="text-[#5B4FE5] font-semibold hover:underline">pcturgus@outlook.com</a>.
           </p>
         </section>
       </div>

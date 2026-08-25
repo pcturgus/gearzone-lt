@@ -1944,6 +1944,7 @@ export default function Home() {
         <div className="flex items-center gap-5">
           <Link href="/taisykles" className="hover:text-[#5B4FE5]">Naudojimosi taisyklės</Link>
           <Link href="/privatumo-politika" className="hover:text-[#5B4FE5]">Privatumo politika</Link>
+          <Link href="/kontaktai" className="hover:text-[#5B4FE5]">Kontaktai</Link>
         </div>
       </footer>
 
