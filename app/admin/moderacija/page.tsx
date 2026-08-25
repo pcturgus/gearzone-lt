@@ -17,6 +17,7 @@ type PendingProduct = {
   seller_id: string | null;
   created_at: string;
   sellerUsername: string;
+  pending_buyer_id?: string | null;
 };
 
 type ChatMessage = {
@@ -94,7 +95,7 @@ export default function AdminModeracija() {
     setLoadingPending(true);
     const { data } = await supabase
       .from("products")
-      .select("id, title, description, price, category, condition, city, photos, seller_id, created_at")
+      .select("id, title, description, price, category, condition, city, photos, seller_id, created_at, pending_buyer_id")
       .eq("status", "laukia_patvirtinimo")
       .order("created_at", { ascending: true });
     setPending(await attachUsernames(data || []));
@@ -105,7 +106,7 @@ export default function AdminModeracija() {
     setLoadingDeleteRequests(true);
     const { data } = await supabase
       .from("products")
-      .select("id, title, description, price, category, condition, city, photos, seller_id, created_at")
+      .select("id, title, description, price, category, condition, city, photos, seller_id, created_at, pending_buyer_id")
       .eq("status", "laukia_istrynimo")
       .order("created_at", { ascending: true });
     setDeleteRequests(await attachUsernames(data || []));
@@ -258,6 +259,14 @@ export default function AdminModeracija() {
     if (!error) {
       if (p.seller_id) {
         await supabase.rpc("increment_sales_count", { seller_id: p.seller_id });
+      }
+      if (p.seller_id && p.pending_buyer_id) {
+        await supabase.from("completed_sales").insert({
+          seller_id: p.seller_id,
+          buyer_id: p.pending_buyer_id,
+          product_title: p.title,
+          price: p.price,
+        });
       }
       await supabase.from("activity_logs").insert({
         type: "parduota",

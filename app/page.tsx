@@ -184,6 +184,12 @@ export default function Home() {
 
   // MANO SKELBIMAI
   const [myListingsOpen, setMyListingsOpen] = useState(false);
+
+  // pirkėjo pasirinkimas žymint parduota
+  const [buyerPickerOpen, setBuyerPickerOpen] = useState(false);
+  const [buyerPickerListing, setBuyerPickerListing] = useState<any>(null);
+  const [buyerOptions, setBuyerOptions] = useState<{ id: string; username: string }[]>([]);
+  const [shareCopied, setShareCopied] = useState(false);
   const [myListings, setMyListings] = useState<any[]>([]);
   const [myListingsLoading, setMyListingsLoading] = useState(false);
   const [mlEditingPriceId, setMlEditingPriceId] = useState<string | null>(null);
@@ -350,6 +356,14 @@ export default function Home() {
     setReportError("");
     setReportSuccess(false);
     setReportModalOpen(true);
+  }
+
+  function handleShare(productId: string) {
+    const url = `${window.location.origin}/skelbimai/${productId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2000);
+    });
   }
 
   async function submitReport() {
@@ -553,12 +567,48 @@ export default function Home() {
   }
 
   async function mlMarkAsSold(p: any) {
-    if (!confirm("Skelbimas bus pateiktas administracijos peržiūrai kaip parduotas. Tęsti?")) return;
-    const { error } = await supabase.from("products").update({ status: "laukia_istrynimo" }).eq("id", p.id);
+    // patikrinam, kiek žmonių rašė apie šį skelbimą
+    const { data: convs } = await supabase
+      .from("conversations")
+      .select("buyer_id")
+      .eq("product_id", p.id);
+
+    const uniqueBuyers = Array.from(new Set((convs || []).map((c) => c.buyer_id)));
+
+    if (uniqueBuyers.length === 0) {
+      if (!confirm("Skelbimas bus pateiktas administracijos peržiūrai kaip parduotas. Tęsti?")) return;
+      await finalizeMarkAsSold(p, null);
+      return;
+    }
+
+    if (uniqueBuyers.length === 1) {
+      if (!confirm("Skelbimas bus pateiktas administracijos peržiūrai kaip parduotas. Tęsti?")) return;
+      await finalizeMarkAsSold(p, uniqueBuyers[0]);
+      return;
+    }
+
+    // keli galimi pirkėjai - reikia pasirinkti
+    const { data: profilesData } = await supabase
+      .from("profiles")
+      .select("id, username")
+      .in("id", uniqueBuyers);
+
+    setBuyerOptions((profilesData || []).map((pr) => ({ id: pr.id, username: pr.username || "Vartotojas" })));
+    setBuyerPickerListing(p);
+    setBuyerPickerOpen(true);
+  }
+
+  async function finalizeMarkAsSold(p: any, buyerId: string | null) {
+    const { error } = await supabase
+      .from("products")
+      .update({ status: "laukia_istrynimo", pending_buyer_id: buyerId })
+      .eq("id", p.id);
     if (!error) {
       setMyListings((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: "laukia_istrynimo" } : x)));
       setProducts((prev) => prev.map((x) => (x.id === p.id ? { ...x, status: "laukia_istrynimo" } : x)));
     }
+    setBuyerPickerOpen(false);
+    setBuyerPickerListing(null);
   }
 
   async function mlDeleteListing(p: any) {
@@ -1393,12 +1443,20 @@ export default function Home() {
                     <span className="block text-2xl font-extrabold text-[#5B4FE5] leading-none">{selected.price} €</span>
                     <span className="text-[11px] text-[#9CA3AF]">Kaina</span>
                   </div>
-                  <button
-                    onClick={(e) => toggleFavorite(selected, e)}
-                    className="w-10 h-10 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] flex items-center justify-center text-lg shrink-0"
-                  >
-                    {favorites.has(selected.id) ? <span className="text-red-500">♥</span> : "♡"}
-                  </button>
+                  <div className="flex gap-2 shrink-0">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleShare(selected.id); }}
+                      className="w-10 h-10 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] flex items-center justify-center text-sm relative"
+                    >
+                      {shareCopied ? "✓" : "🔗"}
+                    </button>
+                    <button
+                      onClick={(e) => toggleFavorite(selected, e)}
+                      className="w-10 h-10 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] flex items-center justify-center text-lg"
+                    >
+                      {favorites.has(selected.id) ? <span className="text-red-500">♥</span> : "♡"}
+                    </button>
+                  </div>
                 </div>
 
                 {isOwnListing ? (
@@ -1902,6 +1960,35 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {/* MODALAS - PIRKĖJO PASIRINKIMAS */}
+      {buyerPickerOpen && buyerPickerListing && (
+        <div onClick={() => setBuyerPickerOpen(false)} className="fixed inset-0 bg-black/60 flex items-center justify-center z-[95] p-6">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-sm w-full p-6">
+            <h3 className="text-base font-extrabold mb-1">Kas pirko šią prekę?</h3>
+            <p className="text-xs text-[#6B7280] mb-4">
+              Apie „{buyerPickerListing.title}“ rašė keli žmonės – pasirink, kuris realiai nupirko, kad jis vėliau galėtų palikti atsiliepimą.
+            </p>
+            <div className="flex flex-col gap-2">
+              {buyerOptions.map((b) => (
+                <button
+                  key={b.id}
+                  onClick={() => finalizeMarkAsSold(buyerPickerListing, b.id)}
+                  className="text-left text-sm font-semibold border border-[#E4E7EE] hover:border-[#5B4FE5] hover:bg-[#EEF0FF] px-4 py-2.5 rounded-lg"
+                >
+                  {b.username}
+                </button>
+              ))}
+              <button
+                onClick={() => finalizeMarkAsSold(buyerPickerListing, null)}
+                className="text-left text-sm font-semibold text-[#6B7280] hover:bg-[#F6F7FB] px-4 py-2.5 rounded-lg mt-1"
+              >
+                Nė vienas iš jų / pardaviau kitaip
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* POKALBIŲ SKYDELIS (slide-over) */}
       <div
