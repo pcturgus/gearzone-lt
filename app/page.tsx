@@ -307,10 +307,15 @@ export default function Home() {
   }, [threadMessages]);
 
   async function openProduct(p: Product) {
-    setSelected(p);
     setSelectedPhoto(0);
-    if (currentUserId !== p.seller_id) {
+    const isOwn = currentUserId && currentUserId === p.seller_id;
+    if (!isOwn) {
+      const updated = { ...p, views_count: (p.views_count || 0) + 1 };
+      setSelected(updated);
+      setProducts((prev) => prev.map((x) => (x.id === p.id ? { ...x, views_count: updated.views_count } : x)));
       supabase.rpc("increment_views", { listing_id: p.id });
+    } else {
+      setSelected(p);
     }
   }
 
