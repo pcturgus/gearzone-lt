@@ -155,6 +155,14 @@ export default function Home() {
   const [starting, setStarting] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
+  // PRANEŠIMAI (report)
+  const [reportModalOpen, setReportModalOpen] = useState(false);
+  const [reportReason, setReportReason] = useState("Fake skelbimas");
+  const [reportDetails, setReportDetails] = useState("");
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
+  const [reportError, setReportError] = useState("");
+
   // MĖGSTAMI
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
   const [favoritesPanelOpen, setFavoritesPanelOpen] = useState(false);
@@ -333,6 +341,43 @@ export default function Home() {
   function nextPhoto(e?: React.MouseEvent) {
     e?.stopPropagation();
     setSelectedPhoto((i) => (i === selectedPhotos.length - 1 ? 0 : i + 1));
+  }
+
+  function openReport() {
+    setReportReason("Fake skelbimas");
+    setReportDetails("");
+    setReportError("");
+    setReportSuccess(false);
+    setReportModalOpen(true);
+  }
+
+  async function submitReport() {
+    if (!selected) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      router.push("/prisijungti");
+      return;
+    }
+
+    setReportSubmitting(true);
+    setReportError("");
+
+    const { error } = await supabase.from("reports").insert({
+      reporter_id: user.id,
+      reported_product_id: selected.id,
+      reported_user_id: selected.seller_id,
+      reason: reportReason,
+      details: reportDetails || null,
+    });
+
+    setReportSubmitting(false);
+
+    if (error) {
+      setReportError("Nepavyko pateikti pranešimo: " + error.message);
+      return;
+    }
+
+    setReportSuccess(true);
   }
 
   async function toggleFavorite(p: Product, e?: React.MouseEvent) {
@@ -1372,6 +1417,15 @@ export default function Home() {
                   </p>
                 )}
 
+                {!isOwnListing && (
+                  <button
+                    onClick={openReport}
+                    className="text-xs font-semibold text-[#9CA3AF] hover:text-red-500 text-center"
+                  >
+                    🚩 Pranešti apie skelbimą
+                  </button>
+                )}
+
                 <div className="bg-white border border-[#E4E7EE] rounded-xl divide-y divide-[#F0F1F6] mt-1">
                   <div className="flex items-center justify-between px-3.5 py-2.5 text-xs">
                     <span className="text-[#6B7280]">Įdėtas</span>
@@ -1431,6 +1485,66 @@ export default function Home() {
               />
             </div>
           )}
+        </div>
+      )}
+
+      {/* MODALAS - PRANEŠIMAS */}
+      {reportModalOpen && selected && (
+        <div onClick={() => setReportModalOpen(false)} className="fixed inset-0 bg-black/60 flex items-center justify-center z-[90] p-6">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-sm w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-base font-extrabold">Pranešti apie skelbimą</h3>
+              <button onClick={() => setReportModalOpen(false)} className="w-8 h-8 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] text-sm flex items-center justify-center">
+                ✕
+              </button>
+            </div>
+
+            {reportSuccess ? (
+              <div className="bg-[#EEF0FF] border border-[#5B4FE5]/30 text-[#5B4FE5] text-sm font-semibold rounded-xl p-4">
+                ✓ Ačiū! Pranešimą gavome ir peržiūrėsime.
+              </div>
+            ) : (
+              <>
+                {reportError && (
+                  <div className="bg-red-50 border border-red-200 text-red-600 text-xs font-semibold rounded-lg p-3 mb-3">
+                    {reportError}
+                  </div>
+                )}
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <label className="text-xs font-bold block mb-1.5">Priežastis</label>
+                    <select
+                      value={reportReason}
+                      onChange={(e) => setReportReason(e.target.value)}
+                      className="w-full border border-[#E4E7EE] rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5]"
+                    >
+                      <option>Fake skelbimas</option>
+                      <option>Netinkamas turinys</option>
+                      <option>Apgaulė / sukčiavimas</option>
+                      <option>Kaina neatitinka prekės</option>
+                      <option>Kita</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold block mb-1.5">Papildoma informacija (nebūtina)</label>
+                    <textarea
+                      value={reportDetails}
+                      onChange={(e) => setReportDetails(e.target.value)}
+                      rows={3}
+                      className="w-full border border-[#E4E7EE] rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5] resize-none"
+                    />
+                  </div>
+                  <button
+                    onClick={submitReport}
+                    disabled={reportSubmitting}
+                    className="w-full bg-red-500 hover:bg-red-600 transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg disabled:opacity-50"
+                  >
+                    {reportSubmitting ? "Siunčiama..." : "Pateikti pranešimą"}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       )}
 

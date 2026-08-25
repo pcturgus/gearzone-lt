@@ -51,6 +51,10 @@ export default function AdminModeracija() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatLoading, setChatLoading] = useState(false);
 
+  const [reports, setReports] = useState<any[]>([]);
+  const [loadingReports, setLoadingReports] = useState(true);
+  const [processingReportId, setProcessingReportId] = useState<string | null>(null);
+
   useEffect(() => {
     async function checkAdmin() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -68,6 +72,7 @@ export default function AdminModeracija() {
       setChecking(false);
       loadPending();
       loadDeleteRequests();
+      loadReports();
     }
     checkAdmin();
   }, [router]);
@@ -105,6 +110,49 @@ export default function AdminModeracija() {
       .order("created_at", { ascending: true });
     setDeleteRequests(await attachUsernames(data || []));
     setLoadingDeleteRequests(false);
+  }
+
+  async function loadReports() {
+    setLoadingReports(true);
+    const { data } = await supabase
+      .from("reports")
+      .select("id, reason, details, status, created_at, reporter_id, reported_product_id, reported_user_id")
+      .eq("status", "naujas")
+      .order("created_at", { ascending: false });
+
+    const list = data || [];
+    const enriched = await Promise.all(
+      list.map(async (r) => {
+        let reporterUsername = "Vartotojas";
+        let targetLabel = "";
+
+        if (r.reporter_id) {
+          const { data: rp } = await supabase.from("profiles").select("username").eq("id", r.reporter_id).single();
+          reporterUsername = rp?.username || "Vartotojas";
+        }
+        if (r.reported_product_id) {
+          const { data: prod } = await supabase.from("products").select("title").eq("id", r.reported_product_id).single();
+          targetLabel = prod ? `Skelbimas: ${prod.title}` : "Skelbimas (jau ištrintas)";
+        } else if (r.reported_user_id) {
+          const { data: up } = await supabase.from("profiles").select("username").eq("id", r.reported_user_id).single();
+          targetLabel = `Vartotojas: ${up?.username || "Vartotojas"}`;
+        }
+
+        return { ...r, reporterUsername, targetLabel };
+      })
+    );
+
+    setReports(enriched);
+    setLoadingReports(false);
+  }
+
+  async function markReportHandled(id: string, status: "perziuretas" | "atmestas") {
+    setProcessingReportId(id);
+    const { error } = await supabase.from("reports").update({ status }).eq("id", id);
+    setProcessingReportId(null);
+    if (!error) {
+      setReports((prev) => prev.filter((r) => r.id !== id));
+    }
   }
 
   async function approve(p: PendingProduct) {
@@ -365,6 +413,45 @@ export default function AdminModeracija() {
                 </button>
                 <button onClick={() => returnToActive(p)} disabled={processingDeleteId === p.id} className="flex items-center gap-1.5 text-sm font-bold text-[#374151] bg-[#F6F7FB] hover:bg-[#EEF0FF] px-4 py-2 rounded-lg disabled:opacity-50">
                   🔄 Atmesti (grąžinti į aktyvius)
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* PRANEŠIMAI */}
+      <h2 className="text-lg font-extrabold mb-3 mt-10">Vartotojų pranešimai</h2>
+      {loadingReports ? (
+        <p className="text-sm text-[#6B7280]">Kraunama...</p>
+      ) : reports.length === 0 ? (
+        <p className="text-sm text-[#6B7280]">Šiuo metu nėra naujų pranešimų.</p>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {reports.map((r) => (
+            <div key={r.id} className="bg-white border border-[#E4E7EE] rounded-2xl p-4">
+              <div className="flex items-center gap-2 mb-1 flex-wrap">
+                <span className="text-[10px] font-bold bg-red-100 text-red-600 px-2 py-0.5 rounded-full">{r.reason}</span>
+                <span className="text-xs text-[#6B7280]">{r.targetLabel}</span>
+              </div>
+              <div className="text-xs text-[#6B7280] mb-2">
+                Pranešė: <span className="font-semibold">{r.reporterUsername}</span> · {new Date(r.created_at).toLocaleString("lt-LT")}
+              </div>
+              {r.details && <p className="text-sm text-[#374151] mb-3">{r.details}</p>}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => markReportHandled(r.id, "perziuretas")}
+                  disabled={processingReportId === r.id}
+                  className="text-xs font-bold text-[#166534] bg-[#DCFCE7] hover:bg-[#BBF7D0] px-3 py-1.5 rounded-lg disabled:opacity-50"
+                >
+                  ✓ Peržiūrėta
+                </button>
+                <button
+                  onClick={() => markReportHandled(r.id, "atmestas")}
+                  disabled={processingReportId === r.id}
+                  className="text-xs font-bold text-[#6B7280] bg-[#F6F7FB] hover:bg-[#EEF0FF] px-3 py-1.5 rounded-lg disabled:opacity-50"
+                >
+                  Atmesti
                 </button>
               </div>
             </div>
