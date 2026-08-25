@@ -994,10 +994,10 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="hidden md:flex items-center justify-center w-[320px] h-[220px] shrink-0 rounded-xl overflow-hidden">
-            <img src="/pcturgus-logo-hero.png" alt="PCturgus.lt" className="w-full h-full object-cover" />
-          </div>
-        </div>
+                   <div className="hidden md:flex items-center justify-end flex-1 h-[200px] max-w-[520px] rounded-xl overflow-hidden">
+            <img src="/pcturgus-logo-hero.png" alt="PCturgus.lt" className="w-full h-full object-contain" />
+          </div>        
+</div>
       </section>
 
       {/* MOBILE KATEGORIJŲ JUOSTELĖ */}
