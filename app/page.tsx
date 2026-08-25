@@ -51,6 +51,7 @@ type NotificationRow = {
   message: string;
   created_at: string;
   read: boolean;
+  from_user_id: string | null;
 };
 
 type ConversationRow = {
@@ -260,7 +261,7 @@ export default function Home() {
   async function loadNotifications(uid: string) {
     const { data } = await supabase
       .from("notifications")
-      .select("id, message, created_at, read")
+      .select("id, message, created_at, read, from_user_id")
       .eq("user_id", uid)
       .order("created_at", { ascending: false })
       .limit(30);
@@ -1951,12 +1952,24 @@ export default function Home() {
             <p className="text-sm text-[#6B7280] p-2">Pranešimų dar nėra.</p>
           ) : (
             <div className="flex flex-col gap-2">
-              {notifications.map((n) => (
-                <div key={n.id} className="border border-[#E4E7EE] rounded-xl p-3">
-                  <p className="text-sm">{n.message}</p>
-                  <p className="text-[11px] text-[#9CA3AF] mt-1">{timeAgo(n.created_at)}</p>
-                </div>
-              ))}
+              {notifications.map((n) =>
+                n.from_user_id ? (
+                  <Link
+                    key={n.id}
+                    href={`/profilis/${n.from_user_id}`}
+                    onClick={() => setNotificationsPanelOpen(false)}
+                    className="block border border-[#E4E7EE] rounded-xl p-3 hover:border-[#5B4FE5] hover:bg-[#EEF0FF] transition-colors"
+                  >
+                    <p className="text-sm">{n.message}</p>
+                    <p className="text-[11px] text-[#9CA3AF] mt-1">{timeAgo(n.created_at)}</p>
+                  </Link>
+                ) : (
+                  <div key={n.id} className="border border-[#E4E7EE] rounded-xl p-3">
+                    <p className="text-sm">{n.message}</p>
+                    <p className="text-[11px] text-[#9CA3AF] mt-1">{timeAgo(n.created_at)}</p>
+                  </div>
+                )
+              )}
             </div>
           )}
         </div>

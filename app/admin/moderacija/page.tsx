@@ -267,6 +267,12 @@ export default function AdminModeracija() {
           product_title: p.title,
           price: p.price,
         });
+        await supabase.from("notifications").insert({
+          user_id: p.pending_buyer_id,
+          from_user_id: p.seller_id,
+          product_id: null,
+          message: `Sandoris dėl „${p.title}“ patvirtintas! Paspausk, kad paliktum atsiliepimą pardavėjui ${sellerProfile?.username || "Vartotojas"}.`,
+        });
       }
       await supabase.from("activity_logs").insert({
         type: "parduota",
