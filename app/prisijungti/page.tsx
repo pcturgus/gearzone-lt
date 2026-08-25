@@ -36,7 +36,7 @@ export default function Prisijungti() {
       </Link>
 
       <h1 className="text-2xl font-extrabold mb-1">Prisijungimas</h1>
-      <p className="text-sm text-[#6B7280] mb-8">Prisijunk prie savo GearZone.lt paskyros.</p>
+      <p className="text-sm text-[#6B7280] mb-8">Prisijunk prie savo PCturgus.lt paskyros.</p>
 
       {error && (
         <div className="bg-red-50 border border-red-200 text-red-600 text-sm font-semibold rounded-xl p-4 mb-6">
@@ -58,7 +58,12 @@ export default function Prisijungti() {
         </div>
 
         <div>
-          <label className="text-xs font-bold block mb-1.5">Slaptažodis</label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-bold">Slaptažodis</label>
+            <Link href="/pamirsau-slaptazodi" className="text-xs font-semibold text-[#5B4FE5] hover:underline">
+              Pamiršai slaptažodį?
+            </Link>
+          </div>
           <input
             required
             type="password"
@@ -72,7 +77,7 @@ export default function Prisijungti() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg mt-2 disabled:opacity-50"
+          className="bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg disabled:opacity-50"
         >
           {loading ? "Jungiamasi..." : "Prisijungti"}
         </button>
