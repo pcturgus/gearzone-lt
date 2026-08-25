@@ -747,7 +747,7 @@ export default function Home() {
     <div className="overflow-x-hidden w-full pb-16 md:pb-0">
       {/* HEADER */}
       <header className="sticky top-0 z-50 bg-[#0B1220] px-4 md:px-8 py-3 md:py-3.5">
-        <div className="flex items-center gap-3 md:gap-6">
+        <div className="flex items-center gap-3 md:gap-6 relative">
           <button
             onClick={() => setMobileMenuOpen(true)}
             className="md:hidden text-white w-9 h-9 flex items-center justify-center shrink-0"
@@ -762,7 +762,7 @@ export default function Home() {
             PCturgus<span className="text-[#8B7FFF]">.lt</span>
           </div>
 
-          <div className="hidden md:flex flex-1 max-w-2xl">
+          <div className="hidden md:flex md:absolute md:left-1/2 md:-translate-x-1/2 md:w-full md:max-w-xl">
             <div className="flex items-center bg-white rounded-lg px-4 py-2.5 w-full">
               <input
                 value={search}
