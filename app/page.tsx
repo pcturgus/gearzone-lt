@@ -395,13 +395,16 @@ export default function Home() {
       }
     }
 
+    // "parduota" per redagavimo langą irgi turi eiti per admin peržiūrą, ne tiesiogiai
+    const finalStatus = editStatus === "parduota" ? "laukia_istrynimo" : editStatus;
+
     const { error: fieldsError } = await supabase
       .from("products")
       .update({
         title: editTitle,
         description: editDescription || null,
         old_price: editOldPrice ? Number(editOldPrice) : null,
-        status: editStatus,
+        status: finalStatus,
       })
       .eq("id", selected.id);
 
@@ -418,7 +421,7 @@ export default function Home() {
       description: editDescription || null,
       price: newPrice,
       old_price: editOldPrice ? Number(editOldPrice) : null,
-      status: editStatus,
+      status: finalStatus,
     };
     setSelected(updated);
     setProducts((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
@@ -1380,7 +1383,7 @@ export default function Home() {
                 >
                   <option value="aktyvus">Aktyvus</option>
                   <option value="rezervuota">Rezervuota</option>
-                  <option value="parduota">Parduota</option>
+                  <option value="parduota">Parduota (bus siunčiama admin peržiūrai)</option>
                 </select>
               </div>
 
