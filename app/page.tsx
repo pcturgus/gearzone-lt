@@ -1276,118 +1276,165 @@ export default function Home() {
 
       {/* MODALAS - SKELBIMO DETALĖS */}
       {selected && (
-        <div onClick={() => setSelected(null)} className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-6">
-          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
-            <div className="h-72 bg-[#F0F1F6] flex items-center justify-center relative">
-              <StatusBadge status={selected.status} />
-              {selectedPhotos.length > 0 ? (
-                <img
-                  src={selectedPhotos[selectedPhoto]}
-                  onClick={() => setLightboxOpen(true)}
-                  className="w-full h-full object-contain cursor-zoom-in"
-                />
-              ) : (
-                <span className="text-6xl">{categoryIcons[selected.category] || "🖥️"}</span>
-              )}
+        <div onClick={() => setSelected(null)} className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 md:p-6">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-3xl w-full max-h-[92vh] overflow-y-auto relative">
+            <button
+              onClick={() => setSelected(null)}
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] text-[#374151] text-base flex items-center justify-center"
+            >
+              ✕
+            </button>
 
-              {selectedPhotos.length > 1 && (
-                <>
-                  <button
-                    onClick={prevPhoto}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/35 hover:bg-black/55 text-white flex items-center justify-center backdrop-blur-sm"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                  <button
-                    onClick={nextPhoto}
-                    className="absolute right-14 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/35 hover:bg-black/55 text-white flex items-center justify-center backdrop-blur-sm"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
-                  </button>
-                </>
-              )}
-
-              <button
-                onClick={() => setSelected(null)}
-                className="absolute top-3 right-3 w-9 h-9 rounded-full bg-black/40 hover:bg-black/55 text-white text-lg flex items-center justify-center"
-              >
-                ✕
-              </button>
-            </div>
-
-            {selectedPhotos.length > 1 && (
-              <div className="flex gap-2 p-3 pb-0">
-                {selectedPhotos.map((src, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setSelectedPhoto(i)}
-                    className={`w-12 h-12 rounded-lg overflow-hidden border-2 ${i === selectedPhoto ? "border-[#5B4FE5]" : "border-transparent"}`}
-                  >
-                    <img src={src} className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-[10px] font-bold bg-[#EEF0FF] text-[#5B4FE5] px-2 py-0.5 rounded-full capitalize">{selected.condition}</span>
-                <span className="text-[11px] text-[#6B7280]">{selected.category} · {selected.city}</span>
-              </div>
-
-              <h3 className="text-xl font-extrabold mb-3">{selected.title}</h3>
-
-              {selected.description && (
-                <p className="text-sm text-[#374151] leading-relaxed mb-5 whitespace-pre-wrap">{selected.description}</p>
-              )}
-
-              <div className="flex items-center gap-2.5 mb-5 pb-5 border-b border-[#F0F1F6]">
-                <UserBadge salesCount={selected.seller?.sales_count || 0} size="md" />
-                <div className="text-sm font-bold">{selected.seller?.username || "Pardavėjas"}</div>
-              </div>
-
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  {selected.old_price && (
-                    <span className="block text-xs text-[#6B7280] line-through">{selected.old_price} €</span>
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-6 p-5 md:p-6">
+              {/* KAIRĖ - MEDIJA + APRAŠYMAS */}
+              <div>
+                <div className="h-64 md:h-80 bg-[#F0F1F6] rounded-2xl flex items-center justify-center relative overflow-hidden mb-3">
+                  {selectedPhotos.length > 0 ? (
+                    <img
+                      src={selectedPhotos[selectedPhoto]}
+                      onClick={() => setLightboxOpen(true)}
+                      className="w-full h-full object-cover cursor-zoom-in"
+                    />
+                  ) : (
+                    <span className="text-6xl">{categoryIcons[selected.category] || "🖥️"}</span>
                   )}
-                  <span className="text-2xl font-extrabold text-[#5B4FE5]">{selected.price} €</span>
+
+                  {selectedPhotos.length > 1 && (
+                    <>
+                      <button
+                        onClick={prevPhoto}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/35 hover:bg-black/55 text-white flex items-center justify-center backdrop-blur-sm"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </button>
+                      <button
+                        onClick={nextPhoto}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-black/35 hover:bg-black/55 text-white flex items-center justify-center backdrop-blur-sm"
+                      >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="white" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                      </button>
+                    </>
+                  )}
                 </div>
-                <button
-                  onClick={(e) => toggleFavorite(selected, e)}
-                  className="w-10 h-10 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] flex items-center justify-center text-lg"
-                >
-                  {favorites.has(selected.id) ? <span className="text-red-500">♥</span> : "♡"}
-                </button>
+
+                {selectedPhotos.length > 1 && (
+                  <div className="flex gap-2 mb-4">
+                    {selectedPhotos.map((src, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedPhoto(i)}
+                        className={`w-14 h-14 rounded-lg overflow-hidden border-2 shrink-0 ${i === selectedPhoto ? "border-[#5B4FE5]" : "border-transparent"}`}
+                      >
+                        <img src={src} className="w-full h-full object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {selected.description && (
+                  <div className="bg-white border border-[#E4E7EE] rounded-2xl p-4">
+                    <h4 className="text-sm font-extrabold mb-2">Aprašymas</h4>
+                    <p className="text-sm text-[#374151] leading-relaxed whitespace-pre-wrap">{selected.description}</p>
+                  </div>
+                )}
               </div>
 
-              {isOwnListing ? (
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs text-[#6B7280] text-center">
-                    Būsena: <span className="font-bold capitalize">{selected.status}</span>
+              {/* DEŠINĖ - ŠONINĖ JUOSTA */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="text-[11px] font-bold bg-[#EEF0FF] text-[#5B4FE5] px-2.5 py-1 rounded-full capitalize">{selected.condition}</span>
+                  {selected.status !== "aktyvus" && (
+                    <span className="text-[11px] font-bold bg-[#F6F7FB] text-[#6B7280] px-2.5 py-1 rounded-full capitalize">{selected.status.replace(/_/g, " ")}</span>
+                  )}
+                  <span className="text-xs text-[#9CA3AF]">{selected.category} · {selected.city}</span>
+                </div>
+
+                <h3 className="text-xl font-extrabold leading-tight">{selected.title}</h3>
+
+                <div className="flex items-center justify-between gap-2 bg-[#F6F7FB] rounded-xl p-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="w-9 h-9 rounded-full bg-[#5B4FE5] text-white flex items-center justify-center text-sm font-bold shrink-0">
+                      {(selected.seller?.username || "P").charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <UserBadge salesCount={selected.seller?.sales_count || 0} size="sm" />
+                        <span className="text-sm font-bold truncate">{selected.seller?.username || "Pardavėjas"}</span>
+                      </div>
+                      <span className="flex items-center gap-1 text-[11px] text-green-600 font-semibold">
+                        <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" /> Aktyvus
+                      </span>
+                    </div>
                   </div>
+                  <button className="text-[11px] font-bold text-[#5B4FE5] bg-white border border-[#5B4FE5]/30 px-2.5 py-1.5 rounded-lg shrink-0 whitespace-nowrap">
+                    Rodyti profilį
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between bg-white border border-[#E4E7EE] rounded-xl px-3.5 py-2.5">
+                  <span className="text-xs text-[#6B7280]">Būklė</span>
+                  <span className="text-xs font-bold capitalize">{selected.condition}</span>
+                </div>
+
+                <div className="flex items-center justify-between bg-white border border-[#E4E7EE] rounded-xl p-4">
+                  <div>
+                    {selected.old_price && (
+                      <span className="block text-xs text-[#6B7280] line-through">{selected.old_price} €</span>
+                    )}
+                    <span className="block text-2xl font-extrabold text-[#5B4FE5] leading-none">{selected.price} €</span>
+                    <span className="text-[11px] text-[#9CA3AF]">Kaina</span>
+                  </div>
+                  <button
+                    onClick={(e) => toggleFavorite(selected, e)}
+                    className="w-10 h-10 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] flex items-center justify-center text-lg shrink-0"
+                  >
+                    {favorites.has(selected.id) ? <span className="text-red-500">♥</span> : "♡"}
+                  </button>
+                </div>
+
+                {isOwnListing ? (
                   <button
                     onClick={(e) => openEditModal(selected, e)}
                     className="w-full bg-[#F6F7FB] hover:bg-[#EEF0FF] text-[#374151] text-sm font-bold px-5 py-3 rounded-lg"
                   >
                     ✎ Redaguoti skelbimą
                   </button>
-                </div>
-              ) : (
-                <button
-                  onClick={handleMessageSeller}
-                  disabled={starting || !selected.seller_id}
-                  className="w-full bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg disabled:opacity-50"
-                >
-                  {starting ? "Pradedama..." : "✉ Rašyti pardavėjui"}
-                </button>
-              )}
+                ) : (
+                  <button
+                    onClick={handleMessageSeller}
+                    disabled={starting || !selected.seller_id}
+                    className="w-full bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg disabled:opacity-50"
+                  >
+                    {starting ? "Pradedama..." : "Parašyti pardavėjui"}
+                  </button>
+                )}
 
-              {!selected.seller_id && (
-                <p className="text-xs text-[#6B7280] text-center mt-2">
-                  Šis skelbimas neturi susieto pardavėjo (sukurtas prieš įvedant prisijungimą).
-                </p>
-              )}
+                {!selected.seller_id && (
+                  <p className="text-xs text-[#6B7280] text-center">
+                    Šis skelbimas neturi susieto pardavėjo (sukurtas prieš įvedant prisijungimą).
+                  </p>
+                )}
+
+                <div className="bg-white border border-[#E4E7EE] rounded-xl divide-y divide-[#F0F1F6] mt-1">
+                  <div className="flex items-center justify-between px-3.5 py-2.5 text-xs">
+                    <span className="text-[#6B7280]">Įdėtas</span>
+                    <span className="font-semibold">
+                      {new Date(selected.created_at).toLocaleDateString("lt-LT")}, {new Date(selected.created_at).toLocaleTimeString("lt-LT", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between px-3.5 py-2.5 text-xs">
+                    <span className="text-[#6B7280]">Peržiūros</span>
+                    <span className="font-semibold">{selected.views_count || 0}</span>
+                  </div>
+                  <div className="flex items-center justify-between px-3.5 py-2.5 text-xs">
+                    <span className="text-[#6B7280]">Vieta</span>
+                    <span className="font-semibold flex items-center gap-1">
+                      {selected.city}, Lietuva
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-5.5-7-11a7 7 0 1114 0c0 5.5-7 11-7 11z" stroke="#9CA3AF" strokeWidth="2"/><circle cx="12" cy="10" r="2.5" stroke="#9CA3AF" strokeWidth="2"/></svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
