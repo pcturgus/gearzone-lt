@@ -219,7 +219,7 @@ export default function Home() {
       const { data, error } = await supabase
         .from("products")
         .select(
-          "id, title, price, old_price, category, condition, city, description, photos, seller_id, created_at, status, views_count, seller:profiles(username, sales_count)"
+          "id, title, price, old_price, category, condition, city, description, photos, seller_id, created_at, status, views_count, seller:profiles!products_seller_id_fkey(username, sales_count)"
         )
         .order("created_at", { ascending: false });
       if (error) console.error("fetchProducts klaida:", error.message, error);
