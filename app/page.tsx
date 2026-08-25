@@ -759,12 +759,8 @@ export default function Home() {
 
           <div className="flex items-center gap-2 text-white font-extrabold text-base md:text-lg shrink-0">
             <span className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-[#5B4FE5] flex items-center justify-center text-sm">🖥️</span>
-            GearZone<span className="text-[#8B7FFF]">.lt</span>
+            PCturgus<span className="text-[#8B7FFF]">.lt</span>
           </div>
-
-          <button className="hidden md:flex items-center gap-2 text-white/90 text-sm font-semibold border border-white/15 px-4 py-2 rounded-lg">
-            ☰ Kategorijos
-          </button>
 
           <div className="hidden md:flex flex-1 max-w-2xl">
             <div className="flex items-center bg-white rounded-lg px-4 py-2.5 w-full">
@@ -972,7 +968,7 @@ export default function Home() {
         </div>
       </div>
 
-           {/* HERO */}
+      {/* HERO */}
       <section className="max-w-[1440px] mx-auto px-4 md:px-8 py-5 md:py-8">
         <div className="bg-[#0B1220] rounded-2xl p-5 md:p-10 flex items-center justify-between overflow-hidden relative">
           <img
@@ -981,7 +977,8 @@ export default function Home() {
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0B1220] via-[#0B1220]/80 to-[#0B1220]/10" />
-          <div className="max-w-md relative z-10">            <h1 className="text-white text-2xl md:text-4xl font-extrabold leading-tight mb-3 md:mb-4">
+          <div className="max-w-md relative z-10">
+            <h1 className="text-white text-2xl md:text-4xl font-extrabold leading-tight mb-3 md:mb-4">
               Pirk. Parduok. Sutaupyk.
               <br />
               Viskas PC entuziastams.
@@ -999,8 +996,9 @@ export default function Home() {
               </Link>
             </div>
           </div>
-                        </div>
-      </section>  
+        </div>
+      </section>
+
       {/* MOBILE KATEGORIJŲ JUOSTELĖ */}
       <section className="md:hidden max-w-[1440px] mx-auto px-4 pb-4">
         <h2 className="text-sm font-extrabold mb-2">Visos kategorijos</h2>
