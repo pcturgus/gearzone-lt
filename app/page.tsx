@@ -758,7 +758,7 @@ export default function Home() {
           </button>
 
           <div className="flex items-center gap-2 text-white font-extrabold text-base md:text-lg shrink-0">
-                        <img src="/pc-logo-icon.png" alt="PCturgus.lt" className="w-7 h-7 md:w-8 md:h-8 rounded-lg object-cover" />
+            <span className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-[#5B4FE5] flex items-center justify-center text-sm">🖥️</span>
             PCturgus<span className="text-[#8B7FFF]">.lt</span>
           </div>
 
@@ -1318,9 +1318,14 @@ export default function Home() {
                       </span>
                     </div>
                   </div>
-                  <button className="text-[11px] font-bold text-[#5B4FE5] bg-white border border-[#5B4FE5]/30 px-2.5 py-1.5 rounded-lg shrink-0 whitespace-nowrap">
-                    Rodyti profilį
-                  </button>
+                  {selected.seller_id && (
+                    <Link
+                      href={`/profilis/${selected.seller_id}`}
+                      className="text-[11px] font-bold text-[#5B4FE5] bg-white border border-[#5B4FE5]/30 px-2.5 py-1.5 rounded-lg shrink-0 whitespace-nowrap"
+                    >
+                      Rodyti profilį
+                    </Link>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between bg-white border border-[#E4E7EE] rounded-xl px-3.5 py-2.5">
