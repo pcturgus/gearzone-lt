@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "../../../lib/supabase";
-import UserBadge from "../../../components/UserBadge";
+import UserBadge from "../../components/UserBadge";
 
 const categoryImages: Record<string, string> = {
   "Vaizdo plokštės": "vaizdo-plokstes.png",
