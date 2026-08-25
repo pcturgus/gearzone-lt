@@ -139,6 +139,7 @@ export default function Home() {
   const [customMaxPrice, setCustomMaxPrice] = useState("");
   const [conditionFilter, setConditionFilter] = useState("any");
   const [cityFilter, setCityFilter] = useState("visi");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState<string | null>(null);
@@ -732,131 +733,252 @@ export default function Home() {
   const lastMineIndex = [...threadMessages].map((m) => m.sender_id).lastIndexOf(currentUserId || "");
 
   return (
-    <div>
+    <div className="overflow-x-hidden w-full pb-16 md:pb-0">
       {/* HEADER */}
-      <header className="sticky top-0 z-50 bg-[#0B1220] px-8 py-3.5 flex items-center gap-6">
-        <div className="flex items-center gap-2 text-white font-extrabold text-lg">
-          <span className="w-8 h-8 rounded-lg bg-[#5B4FE5] flex items-center justify-center text-sm">🖥️</span>
-          GearZone<span className="text-[#8B7FFF]">.lt</span>
+      <header className="sticky top-0 z-50 bg-[#0B1220] px-4 md:px-8 py-3 md:py-3.5">
+        <div className="flex items-center gap-3 md:gap-6">
+          <button
+            onClick={() => setMobileMenuOpen(true)}
+            className="md:hidden text-white w-9 h-9 flex items-center justify-center shrink-0"
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M4 7h16M4 12h16M4 17h16" stroke="white" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+
+          <div className="flex items-center gap-2 text-white font-extrabold text-base md:text-lg shrink-0">
+            <span className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-[#5B4FE5] flex items-center justify-center text-sm">🖥️</span>
+            GearZone<span className="text-[#8B7FFF]">.lt</span>
+          </div>
+
+          <button className="hidden md:flex items-center gap-2 text-white/90 text-sm font-semibold border border-white/15 px-4 py-2 rounded-lg">
+            ☰ Kategorijos
+          </button>
+
+          <div className="hidden md:flex flex-1 max-w-2xl">
+            <div className="flex items-center bg-white rounded-lg px-4 py-2.5 w-full">
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Ieškok komponentų, pvz. RTX 4070, Ryzen 5, 32GB RAM..."
+                className="flex-1 outline-none text-sm text-[#12172B] placeholder:text-[#9CA3AF]"
+              />
+              <span className="text-[#9CA3AF]">🔍</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 md:gap-4 ml-auto">
+            <Link href="/ikelti" className="hidden md:block bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-4 py-2.5 rounded-lg">
+              + Įkelti skelbimą
+            </Link>
+            {username && (
+              <button onClick={openChatList} className="hidden md:block relative text-white/80 hover:text-white text-lg">
+                💬
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+            )}
+            {username && (
+              <button onClick={() => setFavoritesPanelOpen(true)} className="hidden md:block relative text-white/80 hover:text-white text-lg">
+                ♡
+              </button>
+            )}
+            {username ? (
+              <button onClick={openNotifications} className="relative text-white/80 hover:text-white text-lg">
+                🔔
+                {unreadNotifCount > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
+                    {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
+                  </span>
+                )}
+              </button>
+            ) : (
+              <span className="text-white/80 text-lg">🔔</span>
+            )}
+            {isAdmin && (
+              <Link href="/admin/moderacija" className="hidden md:block relative text-white/80 hover:text-white text-lg">
+                🛡️
+                {pendingCount > 0 && (
+                  <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
+                    {pendingCount > 9 ? "9+" : pendingCount}
+                  </span>
+                )}
+              </Link>
+            )}
+
+            {username ? (
+              <div className="relative">
+                <button onClick={() => setUserMenuOpen((v) => !v)} className="flex items-center gap-2 text-white/90 text-sm font-semibold">
+                  <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">👤</span>
+                  <span className="hidden md:inline">{username} ▾</span>
+                </button>
+                {userMenuOpen && (
+                  <div className="absolute right-0 top-11 bg-white border border-[#E4E7EE] rounded-xl shadow-lg py-2 w-52 z-50">
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false);
+                        openMyListings();
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB]"
+                    >
+                      Mano skelbimai
+                    </button>
+                    <button
+                      onClick={() => {
+                        setLevelsModalOpen(true);
+                        setUserMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB]"
+                    >
+                      Sužinoti daugiau apie lygius
+                    </button>
+                    <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB]">
+                      Atsijungti
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="hidden md:flex items-center gap-2">
+                <Link href="/prisijungti" className="text-white/90 text-sm font-semibold px-3 py-2 hover:text-white">
+                  Prisijungti
+                </Link>
+                <Link href="/registracija" className="border border-white/25 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">
+                  Registruotis
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-        <button className="flex items-center gap-2 text-white/90 text-sm font-semibold border border-white/15 px-4 py-2 rounded-lg">
-          ☰ Kategorijos
-        </button>
-        <div className="flex-1 max-w-2xl">
+
+        {/* MOBILE PAIEŠKA - antra eilutė */}
+        <div className="md:hidden mt-3">
           <div className="flex items-center bg-white rounded-lg px-4 py-2.5">
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Ieškok komponentų, pvz. RTX 4070, Ryzen 5, 32GB RAM..."
+              placeholder="Ieškok komponentų..."
               className="flex-1 outline-none text-sm text-[#12172B] placeholder:text-[#9CA3AF]"
             />
             <span className="text-[#9CA3AF]">🔍</span>
           </div>
         </div>
-        <div className="flex items-center gap-4 ml-auto">
-          <Link href="/ikelti" className="bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-4 py-2.5 rounded-lg">
-            + Įkelti skelbimą
-          </Link>
-          {username && (
-            <button onClick={openChatList} className="relative text-white/80 hover:text-white text-lg">
-              💬
-              {unreadCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
-            </button>
-          )}
-          {username && (
-            <button onClick={() => setFavoritesPanelOpen(true)} className="relative text-white/80 hover:text-white text-lg">
-              ♡
-            </button>
-          )}
-          {username ? (
-            <button onClick={openNotifications} className="relative text-white/80 hover:text-white text-lg">
-              🔔
-              {unreadNotifCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
-                  {unreadNotifCount > 9 ? "9+" : unreadNotifCount}
-                </span>
-              )}
-            </button>
-          ) : (
-            <span className="text-white/80 text-lg">🔔</span>
-          )}
-          {isAdmin && (
-            <Link href="/admin/moderacija" className="relative text-white/80 hover:text-white text-lg">
-              🛡️
-              {pendingCount > 0 && (
-                <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
-                  {pendingCount > 9 ? "9+" : pendingCount}
-                </span>
-              )}
-            </Link>
-          )}
-
-          {username ? (
-            <div className="relative">
-              <button onClick={() => setUserMenuOpen((v) => !v)} className="flex items-center gap-2 text-white/90 text-sm font-semibold">
-                <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">👤</span>
-                {username} ▾
-              </button>
-              {userMenuOpen && (
-                <div className="absolute right-0 top-11 bg-white border border-[#E4E7EE] rounded-xl shadow-lg py-2 w-52 z-50">
-                  <button
-                    onClick={() => {
-                      setUserMenuOpen(false);
-                      openMyListings();
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB]"
-                  >
-                    Mano skelbimai
-                  </button>
-                  <button
-                    onClick={() => {
-                      setLevelsModalOpen(true);
-                      setUserMenuOpen(false);
-                    }}
-                    className="w-full text-left px-4 py-2 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB]"
-                  >
-                    Sužinoti daugiau apie lygius
-                  </button>
-                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB]">
-                    Atsijungti
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Link href="/prisijungti" className="text-white/90 text-sm font-semibold px-3 py-2 hover:text-white">
-                Prisijungti
-              </Link>
-              <Link href="/registracija" className="border border-white/25 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">
-                Registruotis
-              </Link>
-            </div>
-          )}
-        </div>
       </header>
 
+      {/* MOBILE HAMBURGER MENU */}
+      <div
+        onClick={() => setMobileMenuOpen(false)}
+        className={`fixed inset-0 bg-black/40 z-[90] transition-opacity md:hidden ${mobileMenuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
+      />
+      <div
+        className={`fixed top-0 left-0 h-full w-[280px] bg-white z-[95] shadow-2xl flex flex-col transition-transform duration-300 md:hidden ${
+          mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between px-4 py-3.5 border-b border-[#E4E7EE]">
+          <span className="text-sm font-extrabold">Meniu</span>
+          <button onClick={() => setMobileMenuOpen(false)} className="w-8 h-8 rounded-full hover:bg-[#F6F7FB] flex items-center justify-center text-sm">
+            ✕
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto p-2">
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full text-left px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
+          >
+            Kategorijos
+          </button>
+          <button
+            onClick={() => setMobileMenuOpen(false)}
+            className="w-full text-left px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
+          >
+            Skelbimai
+          </button>
+          {username && (
+            <>
+              <button
+                onClick={() => { setMobileMenuOpen(false); setFavoritesPanelOpen(true); }}
+                className="w-full text-left px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
+              >
+                Mėgstami
+              </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); openChatList(); }}
+                className="w-full text-left px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
+              >
+                Žinutės
+              </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); openNotifications(); }}
+                className="w-full text-left px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
+              >
+                Pranešimai
+              </button>
+              <button
+                onClick={() => { setMobileMenuOpen(false); openMyListings(); }}
+                className="w-full text-left px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
+              >
+                Mano skelbimai
+              </button>
+              {isAdmin && (
+                <Link
+                  href="/admin/moderacija"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
+                >
+                  Moderacija
+                </Link>
+              )}
+              <button
+                onClick={() => { setMobileMenuOpen(false); handleLogout(); }}
+                className="w-full text-left px-3 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-lg mt-2"
+              >
+                Atsijungti
+              </button>
+            </>
+          )}
+          {!username && (
+            <>
+              <Link
+                href="/prisijungti"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
+              >
+                Prisijungti
+              </Link>
+              <Link
+                href="/registracija"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-3 py-3 text-sm font-bold text-[#5B4FE5] hover:bg-[#EEF0FF] rounded-lg"
+              >
+                Registruotis
+              </Link>
+            </>
+          )}
+        </div>
+      </div>
+
       {/* HERO */}
-      <section className="max-w-[1440px] mx-auto px-8 py-8">
-        <div className="bg-[#0B1220] rounded-2xl p-10 flex items-center justify-between overflow-hidden">
+      <section className="max-w-[1440px] mx-auto px-4 md:px-8 py-5 md:py-8">
+        <div className="bg-[#0B1220] rounded-2xl p-5 md:p-10 flex items-center justify-between overflow-hidden">
           <div className="max-w-md">
-            <h1 className="text-white text-4xl font-extrabold leading-tight mb-4">
+            <h1 className="text-white text-2xl md:text-4xl font-extrabold leading-tight mb-3 md:mb-4">
               Pirk. Parduok. Sutaupyk.
               <br />
               Viskas PC entuziastams.
             </h1>
-            <p className="text-white/60 text-sm mb-6">
-              Lietuvos PC komponentų skelbimų platforma – susirask pirkėją ar pardavėją ir susisiek tiesiogiai.
+            <p className="text-white/60 text-sm mb-5 md:mb-6">
+              <span className="md:hidden">Lietuvos PC komponentų skelbimų platforma.</span>
+              <span className="hidden md:inline">Lietuvos PC komponentų skelbimų platforma – susirask pirkėją ar pardavėją ir susisiek tiesiogiai.</span>
             </p>
-            <div className="flex gap-3">
-              <button className="bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg">
+            <div className="flex flex-col md:flex-row gap-3">
+              <button className="w-full md:w-auto bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg">
                 Naršyti skelbimus
               </button>
-              <Link href="/ikelti" className="border border-white/25 text-white text-sm font-bold px-5 py-3 rounded-lg hover:bg-white/10 transition-colors">
+              <Link href="/ikelti" className="w-full md:w-auto text-center border border-white/25 text-white text-sm font-bold px-5 py-3 rounded-lg hover:bg-white/10 transition-colors">
                 + Įkelti skelbimą
               </Link>
             </div>
@@ -925,10 +1047,32 @@ export default function Home() {
         </div>
       </section>
 
+      {/* MOBILE KATEGORIJŲ JUOSTELĖ */}
+      <section className="md:hidden max-w-[1440px] mx-auto px-4 pb-4">
+        <h2 className="text-sm font-extrabold mb-2">Visos kategorijos</h2>
+        <div className="flex gap-2.5 overflow-x-auto pb-1" style={{ WebkitOverflowScrolling: "touch" }}>
+          {categories.map((c) => {
+            const isActive = activeCategory === c.name;
+            return (
+              <div
+                key={c.name}
+                onClick={() => setActiveCategory(isActive ? null : c.name)}
+                className={`shrink-0 w-[76px] flex flex-col items-center gap-1.5 border rounded-xl p-2.5 cursor-pointer ${
+                  isActive ? "bg-[#EEF0FF] border-[#5B4FE5]" : "bg-white border-[#E4E7EE]"
+                }`}
+              >
+                <CategoryIcon c={c} size="w-8 h-8" />
+                <span className="text-[10px] font-semibold text-center leading-tight">{c.name}</span>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
       {/* FILTRŲ JUOSTA */}
-      <section className="max-w-[1440px] mx-auto px-8 pb-4">
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+      <section className="max-w-[1440px] mx-auto px-4 md:px-8 pb-4">
+        <div className="flex md:flex-wrap items-center gap-2.5 overflow-x-auto md:overflow-visible pb-1 md:pb-0" style={{ WebkitOverflowScrolling: "touch" }}>
+          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2.5 md:py-2">
             <span className="text-xs font-semibold text-[#6B7280]">Rikiuoti:</span>
             <select
               value={sortBy}
@@ -943,7 +1087,7 @@ export default function Home() {
             </select>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
             <span className="text-xs font-semibold text-[#6B7280]">Kategorija:</span>
             <select
               value={activeCategory || "Visos"}
@@ -958,7 +1102,7 @@ export default function Home() {
             </select>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
             <span className="text-xs font-semibold text-[#6B7280]">Kaina:</span>
             <select
               value={priceFilter}
@@ -994,7 +1138,7 @@ export default function Home() {
             )}
           </div>
 
-          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
             <span className="text-xs font-semibold text-[#6B7280]">Būklė:</span>
             <select
               value={conditionFilter}
@@ -1009,7 +1153,7 @@ export default function Home() {
             </select>
           </div>
 
-          <div className="flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
+          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
             <span className="text-xs font-semibold text-[#6B7280]">Vieta:</span>
             <select
               value={cityFilter}
@@ -1041,9 +1185,9 @@ export default function Home() {
       </section>
 
       {/* LAYOUT */}
-      <section className="max-w-[1440px] mx-auto px-8 pb-14 grid grid-cols-[220px_1fr_320px] gap-6 items-start">
+      <section className="max-w-[1440px] mx-auto px-4 md:px-8 pb-14 grid grid-cols-1 md:grid-cols-[220px_1fr_320px] gap-6 items-start">
 
-        <aside className="bg-white border border-[#E4E7EE] rounded-2xl p-4">
+        <aside className="hidden md:block bg-white border border-[#E4E7EE] rounded-2xl p-4">
           <div className="flex justify-between items-center mb-2 px-1">
             <h2 className="text-sm font-extrabold">Visos kategorijos</h2>
             {activeCategory && (
@@ -1083,7 +1227,7 @@ export default function Home() {
           ) : filtered.length === 0 ? (
             <p className="text-sm text-[#6B7280]">Pagal pasirinktus filtrus skelbimų nerasta.</p>
           ) : (
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-3">
               {filtered.map((p) => (
                 <div
                   key={p.id}
@@ -1092,7 +1236,7 @@ export default function Home() {
                     p.status === "parduota" ? "opacity-60" : ""
                   }`}
                 >
-                  <div className="h-24 bg-[#F0F1F6] flex items-center justify-center text-2xl relative overflow-hidden">
+                  <div className="h-48 md:h-24 bg-[#F0F1F6] flex items-center justify-center text-2xl relative overflow-hidden">
                     <StatusBadge status={p.status} />
                     {p.photos && p.photos.length > 0 ? (
                       <img src={p.photos[0]} className="w-full h-full object-cover" />
@@ -1101,23 +1245,23 @@ export default function Home() {
                     )}
                     <button
                       onClick={(e) => toggleFavorite(p, e)}
-                      className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-white flex items-center justify-center text-base shadow-sm"
+                      className="absolute top-1.5 right-1.5 w-8 h-8 md:w-7 md:h-7 rounded-full bg-white flex items-center justify-center text-base shadow-sm"
                     >
                       {favorites.has(p.id) ? <span className="text-red-500">♥</span> : "♡"}
                     </button>
                   </div>
-                  <div className="p-2.5">
-                    <div className="text-xs font-semibold mb-1 leading-snug line-clamp-2">{p.title}</div>
+                  <div className="p-3 md:p-2.5">
+                    <div className="text-sm md:text-xs font-semibold mb-1 leading-snug line-clamp-2">{p.title}</div>
                     {p.seller?.username && (
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <UserBadge salesCount={p.seller.sales_count || 0} size="sm" />
-                        <span className="text-[10px] text-[#6B7280] truncate">{p.seller.username}</span>
+                        <span className="text-xs md:text-[10px] text-[#6B7280] truncate">{p.seller.username}</span>
                       </div>
                     )}
-                    <div className="text-sm font-extrabold text-[#5B4FE5] mb-1.5">{p.price} €</div>
+                    <div className="text-base md:text-sm font-extrabold text-[#5B4FE5] mb-1.5">{p.price} €</div>
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] text-[#6B7280]">{p.city}</span>
-                      <span className="text-[9px] font-bold bg-[#EEF0FF] text-[#5B4FE5] px-1.5 py-0.5 rounded-full capitalize">{p.condition}</span>
+                      <span className="text-xs md:text-[10px] text-[#6B7280]">{p.city}</span>
+                      <span className="text-[10px] md:text-[9px] font-bold bg-[#EEF0FF] text-[#5B4FE5] px-1.5 py-0.5 rounded-full capitalize">{p.condition}</span>
                     </div>
                     <div className="text-[10px] text-[#9CA3AF] mt-1">{timeAgo(p.created_at)}</div>
                   </div>
@@ -1793,6 +1937,40 @@ export default function Home() {
             </form>
           </div>
         )}
+      </div>
+
+      {/* MOBILE APAČIOS NAVIGACIJA */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-[85] bg-white border-t border-[#E4E7EE] flex items-center justify-around py-2">
+        <button className="flex flex-col items-center gap-0.5 text-[#5B4FE5] px-2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 11l9-8 9 8M5 10v10h14V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+          <span className="text-[10px] font-semibold">Pagrindinis</span>
+        </button>
+        <button
+          onClick={() => document.querySelector<HTMLInputElement>('header input')?.focus()}
+          className="flex flex-col items-center gap-0.5 text-[#6B7280] px-2"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" /><path d="M21 21l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+          <span className="text-[10px] font-semibold">Paieška</span>
+        </button>
+        <Link href="/ikelti" className="flex flex-col items-center gap-0.5 -mt-4">
+          <span className="w-11 h-11 rounded-full bg-[#5B4FE5] flex items-center justify-center shadow-lg">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.4" strokeLinecap="round" /></svg>
+          </span>
+        </Link>
+        <button
+          onClick={() => (username ? setFavoritesPanelOpen(true) : router.push("/prisijungti"))}
+          className="flex flex-col items-center gap-0.5 text-[#6B7280] px-2"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.35-9.5-8.5C.5 8.5 3 5 6.5 5c2 0 3.5 1.5 5.5 3 2-1.5 3.5-3 5.5-3 3.5 0 6 3.5 4 7.5C19 16.65 12 21 12 21z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></svg>
+          <span className="text-[10px] font-semibold">Mėgstami</span>
+        </button>
+        <button
+          onClick={() => (username ? setUserMenuOpen((v) => !v) : router.push("/prisijungti"))}
+          className="flex flex-col items-center gap-0.5 text-[#6B7280] px-2"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" strokeWidth="2" /><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+          <span className="text-[10px] font-semibold">Profilis</span>
+        </button>
       </div>
     </div>
   );
