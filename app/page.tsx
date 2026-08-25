@@ -994,66 +994,8 @@ export default function Home() {
               </Link>
             </div>
           </div>
-          <div className="hidden md:flex items-center justify-center w-[280px] h-[220px] shrink-0">
-            <svg viewBox="0 0 280 220" className="w-full h-full">
-              <defs>
-                <radialGradient id="fanGlow" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#8B7FFF" stopOpacity="0.9" />
-                  <stop offset="70%" stopColor="#5B4FE5" stopOpacity="0.5" />
-                  <stop offset="100%" stopColor="#5B4FE5" stopOpacity="0" />
-                </radialGradient>
-                <linearGradient id="caseGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1C2333" />
-                  <stop offset="100%" stopColor="#0B1220" />
-                </linearGradient>
-                <linearGradient id="rgbStrip" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#22D3EE" />
-                  <stop offset="50%" stopColor="#8B7FFF" />
-                  <stop offset="100%" stopColor="#EC4899" />
-                </linearGradient>
-              </defs>
-
-              {/* korpuso siluetas */}
-              <rect x="30" y="10" width="180" height="200" rx="14" fill="url(#caseGrad)" stroke="#2A3350" strokeWidth="2" />
-              {/* stiklinė panelė */}
-              <rect x="46" y="24" width="148" height="172" rx="8" fill="#0A0F1C" stroke="#2A3350" strokeWidth="1.5" />
-
-              {/* RGB juostelė */}
-              <rect x="38" y="24" width="4" height="172" rx="2" fill="url(#rgbStrip)" />
-
-              {/* ventiliatoriai su švytėjimu */}
-              {[62, 110, 158].map((cy, i) => (
-                <g key={i}>
-                  <circle cx="120" cy={cy} r="30" fill="url(#fanGlow)" />
-                  <circle cx="120" cy={cy} r="22" fill="#111827" stroke="#8B7FFF" strokeWidth="1.5" />
-                  <circle cx="120" cy={cy} r="5" fill="#8B7FFF" />
-                  {[0, 60, 120, 180, 240, 300].map((deg) => {
-                    const x2 = (120 + 16 * Math.cos((deg * Math.PI) / 180)).toFixed(2);
-                    const y2 = (cy + 16 * Math.sin((deg * Math.PI) / 180)).toFixed(2);
-                    return (
-                      <line
-                        key={deg}
-                        x1="120"
-                        y1={cy}
-                        x2={x2}
-                        y2={y2}
-                        stroke="#5B4FE5"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                      />
-                    );
-                  })}
-                </g>
-              ))}
-
-              {/* video plokštė dešinėje - antra dalis korpuso */}
-              <rect x="215" y="60" width="55" height="140" rx="10" fill="url(#caseGrad)" stroke="#2A3350" strokeWidth="2" />
-              <rect x="222" y="72" width="41" height="14" rx="3" fill="#8B7FFF" opacity="0.7" />
-              <circle cx="242" cy="120" r="16" fill="#111827" stroke="#22D3EE" strokeWidth="1.5" />
-              <circle cx="242" cy="120" r="4" fill="#22D3EE" />
-              <circle cx="242" cy="160" r="16" fill="#111827" stroke="#22D3EE" strokeWidth="1.5" />
-              <circle cx="242" cy="160" r="4" fill="#22D3EE" />
-            </svg>
+          <div className="hidden md:flex items-center justify-center w-[320px] h-[220px] shrink-0 rounded-xl overflow-hidden">
+            <img src="/pcturgus-logo-hero.png" alt="PCturgus.lt" className="w-full h-full object-cover" />
           </div>
         </div>
       </section>
