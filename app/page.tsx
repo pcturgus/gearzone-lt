@@ -202,6 +202,7 @@ export default function Home() {
   const [threadLoading, setThreadLoading] = useState(false);
   const [threadText, setThreadText] = useState("");
   const [threadSending, setThreadSending] = useState(false);
+  const [threadError, setThreadError] = useState("");
   const [otherOnline, setOtherOnline] = useState(false);
   const [myUsername, setMyUsername] = useState("Tu");
   const [mySales, setMySales] = useState(0);
@@ -675,6 +676,7 @@ export default function Home() {
     if (!threadText.trim() || !activeConv || !currentUserId) return;
 
     setThreadSending(true);
+    setThreadError("");
     const { data, error } = await supabase
       .from("messages")
       .insert({ conversation_id: activeConv.id, sender_id: currentUserId, content: threadText.trim() })
@@ -682,7 +684,12 @@ export default function Home() {
       .single();
     setThreadSending(false);
 
-    if (!error && data) {
+    if (error) {
+      setThreadError(error.message || "Nepavyko išsiųsti žinutės.");
+      return;
+    }
+
+    if (data) {
       setThreadMessages((prev) => [...prev, data]);
       setThreadText("");
     }
@@ -2037,6 +2044,12 @@ export default function Home() {
               )}
               <div ref={bottomRef} />
             </div>
+
+            {threadError && (
+              <div className="mx-3 mb-2 bg-red-50 border border-red-200 text-red-600 text-xs font-semibold rounded-lg p-2.5">
+                {threadError}
+              </div>
+            )}
 
             <form onSubmit={handleSendThread} className="flex gap-2 p-3 border-t border-[#F0F1F6]">
               <input
