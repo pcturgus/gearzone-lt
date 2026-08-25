@@ -309,14 +309,18 @@ export default function Home() {
   async function openProduct(p: Product) {
     setSelectedPhoto(0);
     const isOwn = currentUserId && currentUserId === p.seller_id;
+    console.log("openProduct:", { title: p.title, currentUserId, seller_id: p.seller_id, isOwn });
     if (!isOwn) {
       const updated = { ...p, views_count: (p.views_count || 0) + 1 };
       setSelected(updated);
       setProducts((prev) => prev.map((x) => (x.id === p.id ? { ...x, views_count: updated.views_count } : x)));
-      supabase.rpc("increment_views", { listing_id: p.id }).then(({ error }) => {
+      console.log("Kviečiu increment_views su id:", p.id);
+      supabase.rpc("increment_views", { listing_id: p.id }).then(({ error, data }) => {
         if (error) console.error("increment_views klaida:", error.message, error);
+        else console.log("increment_views pavyko:", data);
       });
     } else {
+      console.log("Praleista - tai tavo pačio skelbimas");
       setSelected(p);
     }
   }
