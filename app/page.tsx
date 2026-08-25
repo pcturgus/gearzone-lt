@@ -1938,6 +1938,15 @@ export default function Home() {
         )}
       </div>
 
+      {/* FOOTER */}
+      <footer className="hidden md:flex items-center justify-between max-w-[1440px] mx-auto px-8 py-6 text-xs text-[#9CA3AF] border-t border-[#E4E7EE] mt-6">
+        <span>© 2026 PCturgus.lt</span>
+        <div className="flex items-center gap-5">
+          <Link href="/taisykles" className="hover:text-[#5B4FE5]">Naudojimosi taisyklės</Link>
+          <Link href="/privatumo-politika" className="hover:text-[#5B4FE5]">Privatumo politika</Link>
+        </div>
+      </footer>
+
       {/* MOBILE APAČIOS NAVIGACIJA */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-[85] bg-white border-t border-[#E4E7EE] flex items-center justify-around py-2">
         <button className="flex flex-col items-center gap-0.5 text-[#5B4FE5] px-2">
