@@ -241,6 +241,7 @@ export default function Home() {
   const [selectedPhoto, setSelectedPhoto] = useState(0);
   const [starting, setStarting] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [descExpanded, setDescExpanded] = useState(false);
 
   // PRANEŠIMAI (report)
   const [reportModalOpen, setReportModalOpen] = useState(false);
@@ -425,6 +426,7 @@ export default function Home() {
 
   async function openProduct(p: Product) {
     setSelectedPhoto(0);
+    setDescExpanded(false);
     const isOwn = currentUserId && currentUserId === p.seller_id;
     console.log("openProduct:", { title: p.title, currentUserId, seller_id: p.seller_id, isOwn });
     if (!isOwn) {
@@ -1609,9 +1611,9 @@ export default function Home() {
             </button>
 
             <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4 md:gap-6 p-4 md:p-6">
-                            {/* KAIRĖ - MEDIJA + APRAŠYMAS */}
+              {/* KAIRĖ - MEDIJA + APRAŠYMAS */}
               <div className="min-w-0">
-                                <div className="h-48 md:h-80 bg-[#F0F1F6] rounded-2xl flex items-center justify-center relative overflow-hidden mb-3">
+                <div className="h-48 md:h-80 bg-[#F0F1F6] rounded-2xl flex items-center justify-center relative overflow-hidden mb-3">
                   {selectedPhotos.length > 0 ? (
                     <img
                       src={selectedPhotos[selectedPhoto]}
@@ -1657,7 +1659,21 @@ export default function Home() {
                 {selected.description && (
                   <div className="bg-white border border-[#E4E7EE] rounded-2xl p-4">
                     <h4 className="text-sm font-extrabold mb-2">Aprašymas</h4>
-                    <p className="text-sm text-[#374151] leading-relaxed whitespace-pre-wrap break-all">{selected.description}</p>
+                    <p
+                      className={`text-sm text-[#374151] leading-relaxed whitespace-pre-wrap break-all ${
+                        descExpanded ? "" : "line-clamp-5"
+                      }`}
+                    >
+                      {selected.description}
+                    </p>
+                    {selected.description.length > 220 && (
+                      <button
+                        onClick={() => setDescExpanded((v) => !v)}
+                        className="text-xs font-bold text-[#5B4FE5] mt-2"
+                      >
+                        {descExpanded ? "Rodyti mažiau" : "Skaityti daugiau"}
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
