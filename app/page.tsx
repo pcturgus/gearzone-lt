@@ -190,9 +190,9 @@ function FilterDropdown({
       {isOpen &&
         typeof document !== "undefined" &&
         createPortal(
-          <div
-            style={{ position: "fixed", top: coords.top, left: coords.left, minWidth: Math.max(coords.width, 200) }}
-            className="bg-white border border-[#E4E7EE] rounded-xl shadow-lg py-1.5 max-h-72 overflow-y-auto z-[100]"
+                   <div
+            style={{ position: "fixed", top: coords.top, left: coords.left, width: 220 }}
+            className="bg-white border border-[#E4E7EE] rounded-xl shadow-lg py-1.5 max-h-72 overflow-y-auto z-50"
           >
             {options.map((o) => (
               <button
