@@ -882,7 +882,7 @@ export default function Home() {
           </button>
 
           <div className="flex items-center gap-2 text-white font-extrabold text-base md:text-lg shrink-0">
-            <span className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-[#5B4FE5] flex items-center justify-center text-sm">🖥️</span>
+            <img src="/pc-logo-icon.png" alt="PCturgus.lt" className="w-7 h-7 md:w-8 md:h-8 rounded-lg object-cover" />
             PCturgus<span className="text-[#8B7FFF]">.lt</span>
           </div>
 
