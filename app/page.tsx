@@ -1609,8 +1609,8 @@ export default function Home() {
             </button>
 
             <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4 md:gap-6 p-4 md:p-6">
-              {/* KAIRĖ - MEDIJA + APRAŠYMAS */}
-              <div>
+                            {/* KAIRĖ - MEDIJA + APRAŠYMAS */}
+              <div className="min-w-0">
                                 <div className="h-48 md:h-80 bg-[#F0F1F6] rounded-2xl flex items-center justify-center relative overflow-hidden mb-3">
                   {selectedPhotos.length > 0 ? (
                     <img
@@ -1657,7 +1657,7 @@ export default function Home() {
                 {selected.description && (
                   <div className="bg-white border border-[#E4E7EE] rounded-2xl p-4">
                     <h4 className="text-sm font-extrabold mb-2">Aprašymas</h4>
-                    <p className="text-sm text-[#374151] leading-relaxed whitespace-pre-wrap break-words">{selected.description}</p>
+                    <p className="text-sm text-[#374151] leading-relaxed whitespace-pre-wrap break-all">{selected.description}</p>
                   </div>
                 )}
               </div>
