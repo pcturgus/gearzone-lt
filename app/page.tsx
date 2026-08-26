@@ -1354,7 +1354,7 @@ export default function Home() {
         {openFilterDropdown && (
           <div className="fixed inset-0 z-40" onClick={() => setOpenFilterDropdown(null)} />
         )}
-        <div className="flex md:flex-wrap items-center gap-2.5 overflow-x-auto md:overflow-visible pb-1 md:pb-0" style={{ WebkitOverflowScrolling: "touch" }}>
+                <div className="flex md:flex-wrap md:justify-center items-center gap-2.5 overflow-x-auto md:overflow-visible pb-1 md:pb-0" style={{ WebkitOverflowScrolling: "touch" }}>
           <FilterDropdown
             label="Rikiuoti"
             value={sortBy}
