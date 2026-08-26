@@ -742,15 +742,11 @@ export default function Home() {
     setUploadTouched(true);
     setUploadError("");
 
-       if (!uploadTitle.trim() || !uploadCategory || !uploadPrice || !uploadCondition || !uploadCity) {
+    if (!uploadTitle.trim() || !uploadCategory || !uploadPrice || !uploadCondition || !uploadCity) {
       setUploadError("Užpildyk visus privalomus laukus (pažymėtus *).");
       return;
     }
 
-    if (uploadPhotos.length === 0) {
-      setUploadError("Pridėk bent vieną prekės nuotrauką.");
-      return;
-    }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       router.push("/prisijungti");
@@ -1065,11 +1061,11 @@ export default function Home() {
               </button>
             )}
             {username && (
-              <button onClick={() => setFavoritesPanelOpen(true)} className="hidden md:block relative text-white/80 hover:text-white text-lg">
-                ♡
+              <button onClick={() => setFavoritesPanelOpen(true)} className="hidden md:block relative text-red-400 hover:text-red-300 text-lg">
+                ♥
               </button>
             )}
-            {username ? (
+            {username && (
               <button onClick={openNotifications} className="relative text-white/80 hover:text-white text-lg">
                 🔔
                 {unreadNotifCount > 0 && (
@@ -1078,8 +1074,6 @@ export default function Home() {
                   </span>
                 )}
               </button>
-            ) : (
-              <span className="text-white/80 text-lg">🔔</span>
             )}
             {isAdmin && (
               <Link href="/admin/moderacija" className="hidden md:block relative text-white/80 hover:text-white text-lg">
@@ -1761,7 +1755,7 @@ export default function Home() {
               )}
 
               <div>
-                <label className="text-xs font-bold block mb-1.5">Nuotraukos ({uploadPhotos.length}/4) *</label>
+                <label className="text-xs font-bold block mb-1.5">Nuotraukos ({uploadPhotos.length}/4)</label>
                 <div className="flex gap-2 flex-wrap">
                   {uploadPhotos.map((p, i) => (
                     <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-[#E4E7EE]">
@@ -2543,9 +2537,9 @@ export default function Home() {
         </button>
         <button
           onClick={() => (username ? setFavoritesPanelOpen(true) : router.push("/prisijungti"))}
-          className="flex flex-col items-center gap-0.5 text-[#6B7280] px-2"
+          className="flex flex-col items-center gap-0.5 text-red-500 px-2"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.35-9.5-8.5C.5 8.5 3 5 6.5 5c2 0 3.5 1.5 5.5 3 2-1.5 3.5-3 5.5-3 3.5 0 6 3.5 4 7.5C19 16.65 12 21 12 21z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" /></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.35-9.5-8.5C.5 8.5 3 5 6.5 5c2 0 3.5 1.5 5.5 3 2-1.5 3.5-3 5.5-3 3.5 0 6 3.5 4 7.5C19 16.65 12 21 12 21z" /></svg>
           <span className="text-[10px] font-semibold">Mėgstami</span>
         </button>
         <button
