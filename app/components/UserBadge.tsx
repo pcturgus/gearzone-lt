@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 
 export type UserLevel = {
   level: number;
@@ -99,12 +100,23 @@ export default function UserBadge({
   size?: "sm" | "md";
 }) {
   const [hover, setHover] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const badgeRef = useRef<HTMLSpanElement>(null);
   const lvl = getUserLevel(salesCount);
   const dim = size === "sm" ? 20 : 26;
 
+  function handleEnter() {
+    const rect = badgeRef.current?.getBoundingClientRect();
+    if (rect) {
+      setCoords({ top: rect.top - 8, left: rect.left + rect.width / 2 });
+    }
+    setHover(true);
+  }
+
   return (
     <span
-      onMouseEnter={() => setHover(true)}
+      ref={badgeRef}
+      onMouseEnter={handleEnter}
       onMouseLeave={() => setHover(false)}
       style={{ position: "relative", display: "inline-flex" }}
     >
@@ -123,36 +135,40 @@ export default function UserBadge({
         <ProgressRing level={lvl.level} ringColor={lvl.ringColor} dim={dim} />
       </span>
 
-      {hover && (
-        <div
-          style={{
-            position: "absolute",
-            bottom: "calc(100% + 8px)",
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 60,
-          }}
-        >
-          <div className="bg-[#0B1220] text-white rounded-xl px-3.5 py-2.5 shadow-lg" style={{ width: "200px" }}>
-            <div className="flex items-center gap-1.5 mb-1">
-              <span
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  background: lvl.ringColor,
-                  boxShadow: lvl.glow || "none",
-                }}
-              />
-              <span className="text-xs font-extrabold">
-                Lygis {lvl.level} · {lvl.name}
-              </span>
+      {hover &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            style={{
+              position: "fixed",
+              top: coords.top,
+              left: coords.left,
+              transform: "translate(-50%, -100%)",
+              zIndex: 9999,
+              pointerEvents: "none",
+            }}
+          >
+            <div className="bg-[#0B1220] text-white rounded-xl px-3.5 py-2.5 shadow-lg" style={{ width: "200px" }}>
+              <div className="flex items-center gap-1.5 mb-1">
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: lvl.ringColor,
+                    boxShadow: lvl.glow || "none",
+                  }}
+                />
+                <span className="text-xs font-extrabold">
+                  Lygis {lvl.level} · {lvl.name}
+                </span>
+              </div>
+              <p className="text-[11px] text-white/70 leading-snug">{lvl.description}</p>
+              <p className="text-[10px] text-white/40 mt-1">{salesCount} įvykdyti sandoriai</p>
             </div>
-            <p className="text-[11px] text-white/70 leading-snug">{lvl.description}</p>
-            <p className="text-[10px] text-white/40 mt-1">{salesCount} įvykdyti sandoriai</p>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </span>
   );
 }
