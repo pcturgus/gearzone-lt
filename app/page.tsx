@@ -180,7 +180,7 @@ function FilterDropdown({
             <button
               key={o.value}
               onClick={() => onChange(o.value)}
-                           className={`w-full text-left px-4 py-2 text-sm transition-all duration-150 rounded-lg ${
+                           className={`w-full text-center px-4 py-2 text-sm transition-all duration-150 rounded-lg ${
                 o.value === value
                   ? "bg-[#5B4FE5] text-white font-bold"
                   : "text-[#374151] hover:bg-[#F6F7FB] hover:shadow-[0_0_10px_rgba(91,79,229,0.35)] font-medium"
