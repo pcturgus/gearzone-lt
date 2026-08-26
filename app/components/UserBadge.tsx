@@ -38,7 +38,7 @@ export const LEVELS: UserLevel[] = [
     name: "Ekspertas",
     description: "Stabili, gausi sandorių istorija. 30–49 sėkmingi sandoriai.",
     minSales: 30,
-    ringColor: "#334155",
+    ringColor: "#22D3EE",
     glow: "0 0 8px 1px rgba(34,211,238,0.55)",
   },
   {
@@ -46,8 +46,8 @@ export const LEVELS: UserLevel[] = [
     name: "Elitas",
     description: "Aukščiausio pasitikėjimo pardavėjas platformoje. 50+ sėkmingų sandorių.",
     minSales: 50,
-    ringColor: "#CBD5E1",
-    glow: "0 0 10px 2px rgba(203,213,225,0.7)",
+    ringColor: "#A78BFA",
+    glow: "0 0 10px 2px rgba(167,139,250,0.65)",
   },
 ];
 
@@ -59,57 +59,34 @@ export function getUserLevel(salesCount: number): UserLevel {
   return result;
 }
 
-function LevelIcon({ level }: { level: number }) {
-  const common = { width: 11, height: 11, viewBox: "0 0 24 24", fill: "none" };
-  if (level === 1) {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="8" r="4" stroke="white" strokeWidth="2.4" />
-        <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke="white" strokeWidth="2.4" strokeLinecap="round" />
-      </svg>
-    );
-  }
-  if (level === 2) {
-    return (
-      <svg {...common}>
-        <path d="M5 12.5l4.5 4.5L19 7.5" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-      </svg>
-    );
-  }
-  if (level === 3) {
-    return (
-      <svg {...common}>
-        <path
-          d="M12 2l7 3v6c0 5-3.2 8.5-7 11-3.8-2.5-7-6-7-11V5l7-3z"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-  if (level === 4) {
-    return (
-      <svg {...common}>
-        <path
-          d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"
-          stroke="white"
-          strokeWidth="1.8"
-          strokeLinejoin="round"
-          fill="rgba(34,211,238,0.25)"
-        />
-      </svg>
-    );
-  }
+function ProgressRing({ level, ringColor, dim }: { level: number; ringColor: string; dim: number }) {
+  const size = 40;
+  const r = 15;
+  const cx = 20;
+  const cy = 20;
+  const circumference = 2 * Math.PI * r;
+  const fraction = level / 5;
+  const dashOffset = circumference * (1 - fraction);
+
   return (
-    <svg {...common}>
-      <path
-        d="M12 2l2.4 6.4L21 11l-6.6 2.6L12 20l-2.4-6.4L3 11l6.6-2.6L12 2z"
-        stroke="white"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-        fill="rgba(251,191,36,0.35)"
+    <svg width={dim} height={dim} viewBox={`0 0 ${size} ${size}`}>
+      <circle cx={cx} cy={cy} r={18} fill="#0B1220" />
+      <circle cx={cx} cy={cy} r={r} fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth={3} />
+      <circle
+        cx={cx}
+        cy={cy}
+        r={r}
+        fill="none"
+        stroke={ringColor}
+        strokeWidth={3}
+        strokeLinecap="round"
+        strokeDasharray={circumference}
+        strokeDashoffset={dashOffset}
+        transform={`rotate(-90 ${cx} ${cy})`}
       />
+      <text x={cx} y={cy} textAnchor="middle" dominantBaseline="central" fill="white" fontSize={14} fontWeight={800}>
+        {level}
+      </text>
     </svg>
   );
 }
@@ -139,13 +116,11 @@ export default function UserBadge({
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "#0B1220",
-          border: `2px solid ${lvl.ringColor}`,
           boxShadow: lvl.glow || "none",
           cursor: "default",
         }}
       >
-        <LevelIcon level={lvl.level} />
+        <ProgressRing level={lvl.level} ringColor={lvl.ringColor} dim={dim} />
       </span>
 
       {hover && (
