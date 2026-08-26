@@ -285,8 +285,10 @@ export default function Ikelti() {
               onChange={(e) => setCondition(e.target.value)}
               className="w-full border border-[#E4E7EE] rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5]"
             >
-              <option value="naujas">Naujas</option>
-              <option value="naudotas">Naudotas</option>
+              <option value="naujas">Nauja</option>
+<option value="naudotas">Naudota</option>
+<option value="atidaryta">Atidaryta / mažai naudota</option>
+<option value="defektas">Su defektu</option>
             </select>
           </div>
           <div>
