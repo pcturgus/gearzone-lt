@@ -99,26 +99,26 @@ export default function UserBadge({
   salesCount: number;
   size?: "sm" | "md";
 }) {
-  const [open, setOpen] = useState(false);
+  const [hover, setHover] = useState(false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const badgeRef = useRef<HTMLSpanElement>(null);
   const lvl = getUserLevel(salesCount);
   const dim = size === "sm" ? 20 : 26;
 
-  function handleToggle(e: React.MouseEvent) {
-    e.stopPropagation();
+  function handleEnter() {
     const rect = badgeRef.current?.getBoundingClientRect();
     if (rect) {
       setCoords({ top: rect.top - 8, left: rect.left + rect.width / 2 });
     }
-    setOpen((v) => !v);
+    setHover(true);
   }
 
   return (
     <span
       ref={badgeRef}
-      onClick={handleToggle}
-      style={{ position: "relative", display: "inline-flex", cursor: "pointer" }}
+      onMouseEnter={handleEnter}
+      onMouseLeave={() => setHover(false)}
+      style={{ position: "relative", display: "inline-flex" }}
     >
       <span
         style={{
@@ -129,46 +129,44 @@ export default function UserBadge({
           alignItems: "center",
           justifyContent: "center",
           boxShadow: lvl.glow || "none",
+          cursor: "default",
         }}
       >
         <ProgressRing level={lvl.level} ringColor={lvl.ringColor} dim={dim} />
       </span>
 
-      {open &&
+      {hover &&
         typeof document !== "undefined" &&
         createPortal(
-          <>
-            <div onClick={() => setOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 9998 }} />
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                position: "fixed",
-                top: coords.top,
-                left: coords.left,
-                transform: "translate(-50%, -100%)",
-                zIndex: 9999,
-              }}
-            >
-              <div className="bg-[#0B1220] text-white rounded-xl px-3.5 py-2.5 shadow-lg" style={{ width: "200px" }}>
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span
-                    style={{
-                      width: 8,
-                      height: 8,
-                      borderRadius: "50%",
-                      background: lvl.ringColor,
-                      boxShadow: lvl.glow || "none",
-                    }}
-                  />
-                  <span className="text-xs font-extrabold">
-                    Lygis {lvl.level} · {lvl.name}
-                  </span>
-                </div>
-                <p className="text-[11px] text-white/70 leading-snug">{lvl.description}</p>
-                <p className="text-[10px] text-white/40 mt-1">{salesCount} įvykdyti sandoriai</p>
+          <div
+            style={{
+              position: "fixed",
+              top: coords.top,
+              left: coords.left,
+              transform: "translate(-50%, -100%)",
+              zIndex: 9999,
+              pointerEvents: "none",
+            }}
+          >
+            <div className="bg-[#0B1220] text-white rounded-xl px-3.5 py-2.5 shadow-lg" style={{ width: "200px" }}>
+              <div className="flex items-center gap-1.5 mb-1">
+                <span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: "50%",
+                    background: lvl.ringColor,
+                    boxShadow: lvl.glow || "none",
+                  }}
+                />
+                <span className="text-xs font-extrabold">
+                  Lygis {lvl.level} · {lvl.name}
+                </span>
               </div>
+              <p className="text-[11px] text-white/70 leading-snug">{lvl.description}</p>
+              <p className="text-[10px] text-white/40 mt-1">{salesCount} įvykdyti sandoriai</p>
             </div>
-          </>,
+          </div>,
           document.body
         )}
     </span>
