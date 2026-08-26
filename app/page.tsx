@@ -1608,10 +1608,10 @@ export default function Home() {
               ✕
             </button>
 
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-6 p-5 md:p-6">
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_280px] gap-4 md:gap-6 p-4 md:p-6">
               {/* KAIRĖ - MEDIJA + APRAŠYMAS */}
               <div>
-                <div className="h-64 md:h-80 bg-[#F0F1F6] rounded-2xl flex items-center justify-center relative overflow-hidden mb-3">
+                                <div className="h-48 md:h-80 bg-[#F0F1F6] rounded-2xl flex items-center justify-center relative overflow-hidden mb-3">
                   {selectedPhotos.length > 0 ? (
                     <img
                       src={selectedPhotos[selectedPhoto]}
