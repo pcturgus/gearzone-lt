@@ -1440,8 +1440,7 @@ export default function Home() {
             isOpen={openFilterDropdown === "city"}
             onToggle={() => setOpenFilterDropdown((v) => (v === "city" ? null : "city"))}
             options={[
-              { value: "visi", label: "Visi miestai" },
-              { value: "lietuva", label: "Visa Lietuva" },
+                           { value: "visi", label: "Visi miestai" },
               { value: "Vilnius", label: "Vilnius" },
               { value: "Kaunas", label: "Kaunas" },
               { value: "Klaipėda", label: "Klaipėda" },
