@@ -180,7 +180,7 @@ function FilterDropdown({
             <button
               key={o.value}
               onClick={() => onChange(o.value)}
-                           className={`w-full text-center px-4 py-2 text-sm transition-all duration-150 rounded-lg ${
+              className={`w-full text-center px-4 py-2 text-sm transition-all duration-150 rounded-lg ${
                 o.value === value
                   ? "bg-[#5B4FE5] text-white font-bold"
                   : "text-[#374151] hover:bg-[#F6F7FB] hover:shadow-[0_0_10px_rgba(91,79,229,0.35)] font-medium"
@@ -1109,7 +1109,7 @@ export default function Home() {
               + Įkelti skelbimą
             </button>
             {username && (
-              <button onClick={openChatList} className="hidden md:block relative text-white/80 hover:text-white text-lg">
+              <button onClick={openChatList} className="relative text-white/80 hover:text-white text-lg">
                 💬
                 {unreadCount > 0 && (
                   <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
@@ -1119,7 +1119,7 @@ export default function Home() {
               </button>
             )}
             {username && (
-              <button onClick={() => setFavoritesPanelOpen(true)} className="hidden md:block relative text-red-400 hover:text-red-300 text-lg">
+              <button onClick={() => setFavoritesPanelOpen(true)} className="relative text-red-400 hover:text-red-300 text-lg">
                 ♥
               </button>
             )}
@@ -1193,6 +1193,7 @@ export default function Home() {
         <div className="md:hidden mt-3">
           <div className="flex items-center bg-white rounded-lg px-4 py-2.5">
             <input
+              id="mobile-search-input"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Ieškok komponentų..."
@@ -1354,7 +1355,7 @@ export default function Home() {
         {openFilterDropdown && (
           <div className="fixed inset-0 z-40" onClick={() => setOpenFilterDropdown(null)} />
         )}
-                <div className="flex md:flex-wrap md:justify-center items-center gap-2.5 overflow-x-auto md:overflow-visible pb-1 md:pb-0" style={{ WebkitOverflowScrolling: "touch" }}>
+        <div className="flex md:flex-wrap md:justify-center items-center gap-2.5 overflow-x-auto md:overflow-visible pb-1 md:pb-0" style={{ WebkitOverflowScrolling: "touch" }}>
           <FilterDropdown
             label="Rikiuoti"
             value={sortBy}
@@ -1440,7 +1441,7 @@ export default function Home() {
             isOpen={openFilterDropdown === "city"}
             onToggle={() => setOpenFilterDropdown((v) => (v === "city" ? null : "city"))}
             options={[
-                           { value: "visi", label: "Visi miestai" },
+              { value: "visi", label: "Visi miestai" },
               { value: "Vilnius", label: "Vilnius" },
               { value: "Kaunas", label: "Kaunas" },
               { value: "Klaipėda", label: "Klaipėda" },
@@ -2582,7 +2583,7 @@ export default function Home() {
           <span className="text-[10px] font-semibold">Pagrindinis</span>
         </button>
         <button
-          onClick={() => document.querySelector<HTMLInputElement>('header input')?.focus()}
+          onClick={() => document.getElementById('mobile-search-input')?.focus()}
           className="flex flex-col items-center gap-0.5 text-[#6B7280] px-2"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" /><path d="M21 21l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
