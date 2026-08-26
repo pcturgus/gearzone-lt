@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabase";
@@ -153,11 +154,23 @@ function FilterDropdown({
   isOpen: boolean;
   onToggle: () => void;
 }) {
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const [coords, setCoords] = useState({ top: 0, left: 0, width: 0 });
   const selectedLabel = options.find((o) => o.value === value)?.label || "";
+
+  function handleToggle() {
+    const rect = btnRef.current?.getBoundingClientRect();
+    if (rect) {
+      setCoords({ top: rect.bottom + 6, left: rect.left, width: rect.width });
+    }
+    onToggle();
+  }
+
   return (
     <div className="relative shrink-0">
       <button
-        onClick={onToggle}
+        ref={btnRef}
+        onClick={handleToggle}
         className={`flex items-center gap-1.5 bg-white border rounded-lg px-3 py-2.5 md:py-2 text-xs transition-colors ${
           isOpen ? "border-[#5B4FE5]" : "border-[#E4E7EE]"
         }`}
@@ -174,23 +187,29 @@ function FilterDropdown({
           <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
-      {isOpen && (
-        <div className="absolute top-full left-0 mt-1.5 bg-white border border-[#E4E7EE] rounded-xl shadow-lg py-1.5 min-w-[200px] max-h-72 overflow-y-auto z-50">
-          {options.map((o) => (
-            <button
-              key={o.value}
-              onClick={() => onChange(o.value)}
-              className={`w-full text-center px-4 py-2 text-sm transition-all duration-150 rounded-lg ${
-                o.value === value
-                  ? "bg-[#5B4FE5] text-white font-bold"
-                  : "text-[#374151] hover:bg-[#F6F7FB] hover:shadow-[0_0_10px_rgba(91,79,229,0.35)] font-medium"
-              }`}
-            >
-              {o.label}
-            </button>
-          ))}
-        </div>
-      )}
+      {isOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            style={{ position: "fixed", top: coords.top, left: coords.left, minWidth: Math.max(coords.width, 200) }}
+            className="bg-white border border-[#E4E7EE] rounded-xl shadow-lg py-1.5 max-h-72 overflow-y-auto z-[100]"
+          >
+            {options.map((o) => (
+              <button
+                key={o.value}
+                onClick={() => onChange(o.value)}
+                className={`w-full text-center px-4 py-2 text-sm transition-all duration-150 rounded-lg ${
+                  o.value === value
+                    ? "bg-[#5B4FE5] text-white font-bold"
+                    : "text-[#374151] hover:bg-[#F6F7FB] hover:shadow-[0_0_10px_rgba(91,79,229,0.35)] font-medium"
+                }`}
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }
@@ -2586,7 +2605,10 @@ export default function Home() {
 
       {/* MOBILE APAČIOS NAVIGACIJA */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 z-[85] bg-white border-t border-[#E4E7EE] flex items-center justify-around py-2">
-        <button className="flex flex-col items-center gap-0.5 text-[#5B4FE5] px-2">
+        <button
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          className="flex flex-col items-center gap-0.5 text-[#5B4FE5] px-2"
+        >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 11l9-8 9 8M5 10v10h14V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
           <span className="text-[10px] font-semibold">Pagrindinis</span>
         </button>
