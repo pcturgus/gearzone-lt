@@ -140,6 +140,7 @@ export default function Home() {
   const [customMaxPrice, setCustomMaxPrice] = useState("");
   const [conditionFilter, setConditionFilter] = useState("any");
   const [cityFilter, setCityFilter] = useState("visi");
+  const [visibleCount, setVisibleCount] = useState(12);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -842,6 +843,17 @@ export default function Home() {
       return 0;
     });
 
+  const visibleProducts = filtered.slice(0, visibleCount);
+
+  const categoryCounts: Record<string, number> = {};
+  categories.forEach((c) => {
+    categoryCounts[c.name] = products.filter((p) => p.category === c.name && p.status === "aktyvus").length;
+  });
+
+  useEffect(() => {
+    setVisibleCount(12);
+  }, [activeCategory, search, priceFilter, customMinPrice, customMaxPrice, conditionFilter, cityFilter, sortBy]);
+
   const latest = products.slice(0, 5);
   const selectedPhotos = selected?.photos && selected.photos.length > 0 ? selected.photos : [];
   const isOwnListing = selected && currentUserId && currentUserId === selected.seller_id;
@@ -1264,7 +1276,8 @@ export default function Home() {
                   }`}
                 >
                   <CategoryIcon c={c} />
-                  <span className="leading-tight">{c.name}</span>
+                  <span className="leading-tight flex-1">{c.name}</span>
+                  <span className="text-[11px] text-[#9CA3AF] font-semibold">{categoryCounts[c.name] || 0}</span>
                 </div>
               );
             })}
@@ -1284,7 +1297,7 @@ export default function Home() {
             <p className="text-sm text-[#6B7280]">Pagal pasirinktus filtrus skelbimų nerasta.</p>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-3">
-              {filtered.map((p) => (
+              {visibleProducts.map((p) => (
                 <div
                   key={p.id}
                   onClick={() => openProduct(p)}
@@ -1323,6 +1336,18 @@ export default function Home() {
                   </div>
                 </div>
               ))}
+            </div>
+          )}
+
+          {!loading && filtered.length > visibleCount && (
+            <div className="flex justify-center mt-6">
+              <button
+                onClick={() => setVisibleCount((v) => v + 12)}
+                className="flex items-center gap-1.5 text-sm font-bold text-[#5B4FE5] bg-white border border-[#5B4FE5]/30 hover:bg-[#EEF0FF] px-5 py-2.5 rounded-lg"
+              >
+                Rodyti daugiau
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
             </div>
           )}
         </div>
