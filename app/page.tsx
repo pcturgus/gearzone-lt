@@ -28,7 +28,7 @@ const categories = [
   { icon: "💻", name: "Nešiojamas kompiuteris", image: "nesiojami-kompiuteriai.jpg" },
   { icon: "🔊", name: "Kolonėlės", image: "koloneles.jpg" },
   { icon: "🎮", name: "Žaidimų pulteliai", image: "zaidimu-pulteliai.jpg" },
-  { icon: "🕹️", name: "Žaidimų konsolės ir žaidimai", image: "zaidimu-konsoles.png" },
+  { icon: "🕹️", name: "Žaidimų konsolės ir žaidimai", image: "zaidimu-konsoles.jpg" },
   { icon: "🥽", name: "Virtuali realybė (VR)", image: "vr.jpg" },
   { icon: "📦", name: "Kita", image: "kita.jpg" },
 ];

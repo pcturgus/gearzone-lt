@@ -27,7 +27,7 @@ const categoryImages: Record<string, string> = {
   "Nešiojamas kompiuteris": "nesiojami-kompiuteriai.jpg",
   "Kolonėlės": "koloneles.jpg",
   "Žaidimų pulteliai": "zaidimu-pulteliai.jpg",
-  "Žaidimų konsolės ir žaidimai": "zaidimu-konsoles.png",
+  "Žaidimų konsolės ir žaidimai": "zaidimu-konsoles.jpg",
   "Virtuali realybė (VR)": "vr.jpg",
   "Kita": "kita.jpg",
 };
