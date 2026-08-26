@@ -2191,7 +2191,7 @@ export default function Home() {
               </button>
             </div>
             <p className="text-xs text-[#6B7280] mb-5">
-              Kiekvienas GearZone.lt vartotojas turi lygį, kuris kyla priklausomai nuo sėkmingai įvykdytų sandorių skaičiaus.
+              Kiekvienas PCturgus.lt vartotojas turi lygį, kuris kyla priklausomai nuo sėkmingai įvykdytų sandorių skaičiaus.
             </p>
             <div className="flex flex-col gap-3">
               {LEVELS.map((lvl) => (
