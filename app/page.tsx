@@ -224,6 +224,20 @@ export default function Home() {
   const [mySales, setMySales] = useState(0);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // SKELBIMO ĮKĖLIMO MODALAS
+  const [uploadModalOpen, setUploadModalOpen] = useState(false);
+  const [uploadTitle, setUploadTitle] = useState("");
+  const [uploadCategory, setUploadCategory] = useState("");
+  const [uploadBrand, setUploadBrand] = useState("");
+  const [uploadPrice, setUploadPrice] = useState("");
+  const [uploadCondition, setUploadCondition] = useState("");
+  const [uploadCity, setUploadCity] = useState("");
+  const [uploadDescription, setUploadDescription] = useState("");
+  const [uploadPhotos, setUploadPhotos] = useState<{ blob: Blob; preview: string }[]>([]);
+  const [uploadSubmitting, setUploadSubmitting] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const [uploadTouched, setUploadTouched] = useState(false);
+
   useEffect(() => {
     async function fetchProducts() {
       const { data, error } = await supabase
@@ -644,6 +658,140 @@ export default function Home() {
     setMlDeletingId(null);
   }
 
+  async function openUploadModal() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      router.push("/prisijungti");
+      return;
+    }
+    setUploadTitle("");
+    setUploadCategory("");
+    setUploadBrand("");
+    setUploadPrice("");
+    setUploadCondition("");
+    setUploadCity("");
+    setUploadDescription("");
+    setUploadPhotos([]);
+    setUploadError("");
+    setUploadTouched(false);
+    setUploadModalOpen(true);
+  }
+
+  function compressImage(file: File): Promise<Blob> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxDim = 1200;
+          let { width, height } = img;
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx?.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) resolve(blob);
+              else reject(new Error("Nepavyko apdoroti nuotraukos."));
+            },
+            "image/jpeg",
+            0.7
+          );
+        };
+        img.onerror = () => reject(new Error("Nepavyko nuskaityti nuotraukos."));
+        img.src = e.target?.result as string;
+      };
+      reader.onerror = () => reject(new Error("Nepavyko nuskaityti failo."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  async function handleUploadPhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files || []);
+    const remaining = 4 - uploadPhotos.length;
+    const toProcess = files.slice(0, remaining);
+    for (const file of toProcess) {
+      try {
+        const blob = await compressImage(file);
+        const preview = URL.createObjectURL(blob);
+        setUploadPhotos((prev) => [...prev, { blob, preview }]);
+      } catch {
+        setUploadError("Nepavyko apdoroti vienos iš nuotraukų.");
+      }
+    }
+    e.target.value = "";
+  }
+
+  function removeUploadPhoto(idx: number) {
+    setUploadPhotos((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  function uploadFieldMissing(value: string) {
+    return uploadTouched && !value.trim();
+  }
+
+  async function submitUpload() {
+    setUploadTouched(true);
+    setUploadError("");
+
+    if (!uploadTitle.trim() || !uploadCategory || !uploadPrice || !uploadCondition || !uploadCity) {
+      setUploadError("Užpildyk visus privalomus laukus (pažymėtus *).");
+      return;
+    }
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      router.push("/prisijungti");
+      return;
+    }
+
+    setUploadSubmitting(true);
+
+    const photoUrls: string[] = [];
+    for (const p of uploadPhotos) {
+      const fileName = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.jpg`;
+      const { error: uploadErr } = await supabase.storage
+        .from("product-photos")
+        .upload(fileName, p.blob, { contentType: "image/jpeg" });
+      if (uploadErr) {
+        setUploadSubmitting(false);
+        setUploadError("Nepavyko įkelti nuotraukos: " + uploadErr.message);
+        return;
+      }
+      const { data: urlData } = supabase.storage.from("product-photos").getPublicUrl(fileName);
+      photoUrls.push(urlData.publicUrl);
+    }
+
+    const { error: insertErr } = await supabase.from("products").insert({
+      title: uploadTitle.trim(),
+      category: uploadCategory,
+      brand: uploadBrand.trim() || null,
+      price: Number(uploadPrice),
+      condition: uploadCondition,
+      city: uploadCity,
+      description: uploadDescription.trim() || null,
+      photos: photoUrls,
+      seller_id: user.id,
+    });
+
+    setUploadSubmitting(false);
+
+    if (insertErr) {
+      setUploadError("Nepavyko sukurti skelbimo: " + insertErr.message);
+      return;
+    }
+
+    setUploadModalOpen(false);
+  }
+
   async function handleLogout() {
     await supabase.auth.signOut();
     setUserMenuOpen(false);
@@ -899,9 +1047,9 @@ export default function Home() {
           </div>
 
           <div className="flex items-center gap-3 md:gap-4 ml-auto">
-            <Link href="/ikelti" className="hidden md:block bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-4 py-2.5 rounded-lg">
+            <button onClick={openUploadModal} className="hidden md:block bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-4 py-2.5 rounded-lg">
               + Įkelti skelbimą
-            </Link>
+            </button>
             {username && (
               <button onClick={openChatList} className="hidden md:block relative text-white/80 hover:text-white text-lg">
                 💬
@@ -1115,9 +1263,9 @@ export default function Home() {
               <button className="w-full md:w-auto bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg">
                 Naršyti skelbimus
               </button>
-              <Link href="/ikelti" className="w-full md:w-auto text-center border border-white/25 text-white text-sm font-bold px-5 py-3 rounded-lg hover:bg-white/10 transition-colors">
+              <button onClick={openUploadModal} className="w-full md:w-auto text-center border border-white/25 text-white text-sm font-bold px-5 py-3 rounded-lg hover:bg-white/10 transition-colors">
                 + Įkelti skelbimą
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -1587,6 +1735,164 @@ export default function Home() {
         </div>
       )}
 
+      {/* MODALAS - ĮKELTI SKELBIMĄ */}
+      {uploadModalOpen && (
+        <div onClick={() => setUploadModalOpen(false)} className="fixed inset-0 bg-black/60 flex items-center justify-center z-[85] p-4 md:p-6">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-lg w-full max-h-[92vh] overflow-y-auto">
+            <div className="flex justify-between items-center px-6 pt-6 pb-1">
+              <div>
+                <h3 className="text-lg font-extrabold">Įkelti skelbimą</h3>
+                <p className="text-xs text-[#6B7280] mt-0.5">Užpildyk informaciją apie parduodamą prekę.</p>
+              </div>
+              <button onClick={() => setUploadModalOpen(false)} className="w-8 h-8 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] text-sm flex items-center justify-center shrink-0">
+                ✕
+              </button>
+            </div>
+
+            <div className="p-6 flex flex-col gap-4">
+              {uploadError && (
+                <div className="bg-red-50 border border-red-200 text-red-600 text-xs font-semibold rounded-lg p-3">
+                  {uploadError}
+                </div>
+              )}
+
+              <div>
+                <label className="text-xs font-bold block mb-1.5">Nuotraukos ({uploadPhotos.length}/4)</label>
+                <div className="flex gap-2 flex-wrap">
+                  {uploadPhotos.map((p, i) => (
+                    <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-[#E4E7EE]">
+                      <img src={p.preview} className="w-full h-full object-cover" />
+                      <button
+                        onClick={() => removeUploadPhoto(i)}
+                        className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/50 text-white text-[10px] flex items-center justify-center"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                  {uploadPhotos.length < 4 && (
+                    <label className="w-20 h-20 rounded-lg border-2 border-dashed border-[#E4E7EE] hover:border-[#5B4FE5] flex flex-col items-center justify-center cursor-pointer text-[#9CA3AF] hover:text-[#5B4FE5] transition-colors">
+                      <span className="text-lg">+</span>
+                      <span className="text-[10px] font-semibold">Pridėti</span>
+                      <input type="file" accept="image/*" multiple onChange={handleUploadPhotoSelect} className="hidden" />
+                    </label>
+                  )}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold block mb-1.5">Pavadinimas *</label>
+                <input
+                  value={uploadTitle}
+                  onChange={(e) => setUploadTitle(e.target.value)}
+                  placeholder="pvz. ASUS TUF RTX 4070 Ti SUPER 16GB"
+                  className={`w-full border rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5] ${uploadFieldMissing(uploadTitle) ? "border-red-400" : "border-[#E4E7EE]"}`}
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold block mb-1.5">Kategorija *</label>
+                  <select
+                    value={uploadCategory}
+                    onChange={(e) => setUploadCategory(e.target.value)}
+                    className={`w-full border rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5] bg-white ${uploadFieldMissing(uploadCategory) ? "border-red-400" : "border-[#E4E7EE]"}`}
+                  >
+                    <option value="">Pasirink</option>
+                    {categories.map((c) => (
+                      <option key={c.name} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold block mb-1.5">Prekės ženklas</label>
+                  <input
+                    value={uploadBrand}
+                    onChange={(e) => setUploadBrand(e.target.value)}
+                    placeholder="pvz. ASUS, MSI, AMD"
+                    className="w-full border border-[#E4E7EE] rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5]"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs font-bold block mb-1.5">Kaina, € *</label>
+                  <input
+                    type="number"
+                    value={uploadPrice}
+                    onChange={(e) => setUploadPrice(e.target.value)}
+                    placeholder="99"
+                    className={`w-full border rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5] ${uploadFieldMissing(uploadPrice) ? "border-red-400" : "border-[#E4E7EE]"}`}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold block mb-1.5">Būklė *</label>
+                  <select
+                    value={uploadCondition}
+                    onChange={(e) => setUploadCondition(e.target.value)}
+                    className={`w-full border rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5] bg-white ${uploadFieldMissing(uploadCondition) ? "border-red-400" : "border-[#E4E7EE]"}`}
+                  >
+                    <option value="">Pasirink</option>
+                    <option value="naujas">Nauja</option>
+                    <option value="naudotas">Naudota</option>
+                    <option value="atidaryta">Atidaryta / mažai naudota</option>
+                    <option value="defektas">Su defektu</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold block mb-1.5">Miestas *</label>
+                <select
+                  value={uploadCity}
+                  onChange={(e) => setUploadCity(e.target.value)}
+                  className={`w-full border rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5] bg-white ${uploadFieldMissing(uploadCity) ? "border-red-400" : "border-[#E4E7EE]"}`}
+                >
+                  <option value="">Pasirink</option>
+                  <option value="Vilnius">Vilnius</option>
+                  <option value="Kaunas">Kaunas</option>
+                  <option value="Klaipėda">Klaipėda</option>
+                  <option value="Šiauliai">Šiauliai</option>
+                  <option value="Panevėžys">Panevėžys</option>
+                  <option value="Alytus">Alytus</option>
+                  <option value="Marijampolė">Marijampolė</option>
+                  <option value="Mažeikiai">Mažeikiai</option>
+                  <option value="Jonava">Jonava</option>
+                  <option value="Utena">Utena</option>
+                  <option value="Kėdainiai">Kėdainiai</option>
+                  <option value="Telšiai">Telšiai</option>
+                  <option value="Tauragė">Tauragė</option>
+                  <option value="Ukmergė">Ukmergė</option>
+                  <option value="Palanga">Palanga</option>
+                  <option value="Kretinga">Kretinga</option>
+                  <option value="Kita">Kita</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold block mb-1.5">Aprašymas</label>
+                <textarea
+                  value={uploadDescription}
+                  onChange={(e) => setUploadDescription(e.target.value)}
+                  placeholder="Papasakok apie prekės būklę, naudojimo laiką ir t.t."
+                  rows={4}
+                  className="w-full border border-[#E4E7EE] rounded-lg px-3.5 py-2.5 text-sm outline-none focus:border-[#5B4FE5] resize-none"
+                />
+              </div>
+
+              <button
+                onClick={submitUpload}
+                disabled={uploadSubmitting}
+                className="w-full bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg disabled:opacity-50"
+              >
+                {uploadSubmitting ? "Skelbiama..." : "Skelbti"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* MODALAS - PRANEŠIMAS */}
       {reportModalOpen && selected && (
         <div onClick={() => setReportModalOpen(false)} className="fixed inset-0 bg-black/60 flex items-center justify-center z-[90] p-6">
@@ -1663,9 +1969,9 @@ export default function Home() {
             ) : myListings.length === 0 ? (
               <p className="text-sm text-[#6B7280]">
                 Kol kas neturi įkeltų skelbimų.{" "}
-                <Link href="/ikelti" onClick={() => setMyListingsOpen(false)} className="text-[#5B4FE5] font-bold">
+                <button onClick={() => { setMyListingsOpen(false); openUploadModal(); }} className="text-[#5B4FE5] font-bold">
                   Įkelti dabar
-                </Link>
+                </button>
               </p>
             ) : (
               <div className="flex flex-col gap-3">
@@ -2226,11 +2532,11 @@ export default function Home() {
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" /><path d="M21 21l-4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
           <span className="text-[10px] font-semibold">Paieška</span>
         </button>
-        <Link href="/ikelti" className="flex flex-col items-center gap-0.5 -mt-4">
+        <button onClick={openUploadModal} className="flex flex-col items-center gap-0.5 -mt-4">
           <span className="w-11 h-11 rounded-full bg-[#5B4FE5] flex items-center justify-center shadow-lg">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="white" strokeWidth="2.4" strokeLinecap="round" /></svg>
           </span>
-        </Link>
+        </button>
         <button
           onClick={() => (username ? setFavoritesPanelOpen(true) : router.push("/prisijungti"))}
           className="flex flex-col items-center gap-0.5 text-[#6B7280] px-2"
