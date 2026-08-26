@@ -1657,7 +1657,7 @@ export default function Home() {
                 {selected.description && (
                   <div className="bg-white border border-[#E4E7EE] rounded-2xl p-4">
                     <h4 className="text-sm font-extrabold mb-2">Aprašymas</h4>
-                    <p className="text-sm text-[#374151] leading-relaxed whitespace-pre-wrap">{selected.description}</p>
+                    <p className="text-sm text-[#374151] leading-relaxed whitespace-pre-wrap break-words">{selected.description}</p>
                   </div>
                 )}
               </div>
