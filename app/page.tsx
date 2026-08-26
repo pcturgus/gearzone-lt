@@ -190,7 +190,7 @@ function FilterDropdown({
       {isOpen &&
         typeof document !== "undefined" &&
         createPortal(
-                   <div
+          <div
             style={{ position: "fixed", top: coords.top, left: coords.left, width: 220 }}
             className="bg-white border border-[#E4E7EE] rounded-xl shadow-lg py-1.5 max-h-72 overflow-y-auto z-50"
           >
@@ -1169,6 +1169,9 @@ export default function Home() {
                   <span className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center shrink-0">👤</span>
                   <span className="hidden md:inline">{username} ▾</span>
                 </button>
+                {userMenuOpen && (
+                  <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+                )}
                 {userMenuOpen && (
                   <div className="absolute right-0 top-11 bg-white border border-[#E4E7EE] rounded-xl shadow-lg py-2 w-52 z-50">
                     <button
