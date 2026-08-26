@@ -30,14 +30,14 @@ const categoryImages: Record<string, string> = {
   "Monitoriai": "monitoriai.png",
   "Kėdės ir stalai": "kedes-stalai.png",
   "Tinklo įranga": "tinklo-iranga.png",
-  "Mikrofonai ir transliavimo įranga": "mikrofonai-transliavimas.png",
-  "Stacionarūs kompiuteriai (PC)": "stacionarus-kompiuteriai.png",
-  "Nešiojamas kompiuteris": "nesiojami-kompiuteriai.png",
-  "Kolonėlės": "koloneles.png",
-  "Žaidimų pulteliai": "zaidimu-pulteliai.png",
+  "Mikrofonai ir transliavimo įranga": "mikrofonai-transliavimas.jpg",
+  "Stacionarūs kompiuteriai (PC)": "stacionarus-kompiuteriai.jpg",
+  "Nešiojamas kompiuteris": "nesiojami-kompiuteriai.jpg",
+  "Kolonėlės": "koloneles.jpg",
+  "Žaidimų pulteliai": "zaidimu-pulteliai.jpg",
   "Žaidimų konsolės ir žaidimai": "zaidimu-konsoles.png",
-  "Virtuali realybė (VR)": "vr.png",
-  "Kita": "kita.png",
+  "Virtuali realybė (VR)": "vr.jpg",
+  "Kita": "kita.jpg",
 };
 
 function timeAgo(dateStr: string) {

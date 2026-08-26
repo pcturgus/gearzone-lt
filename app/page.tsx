@@ -23,14 +23,14 @@ const categories = [
   { icon: "🖥️", name: "Monitoriai", image: "monitoriai.png" },
   { icon: "🪑", name: "Kėdės ir stalai", image: "kedes-stalai.png" },
   { icon: "📡", name: "Tinklo įranga", image: "tinklo-iranga.png" },
-  { icon: "🎙️", name: "Mikrofonai ir transliavimo įranga", image: "mikrofonai-transliavimas.png" },
-  { icon: "🖥️", name: "Stacionarūs kompiuteriai (PC)", image: "stacionarus-kompiuteriai.png" },
-  { icon: "💻", name: "Nešiojamas kompiuteris", image: "nesiojami-kompiuteriai.png" },
-  { icon: "🔊", name: "Kolonėlės", image: "koloneles.png" },
-  { icon: "🎮", name: "Žaidimų pulteliai", image: "zaidimu-pulteliai.png" },
+  { icon: "🎙️", name: "Mikrofonai ir transliavimo įranga", image: "mikrofonai-transliavimas.jpg" },
+  { icon: "🖥️", name: "Stacionarūs kompiuteriai (PC)", image: "stacionarus-kompiuteriai.jpg" },
+  { icon: "💻", name: "Nešiojamas kompiuteris", image: "nesiojami-kompiuteriai.jpg" },
+  { icon: "🔊", name: "Kolonėlės", image: "koloneles.jpg" },
+  { icon: "🎮", name: "Žaidimų pulteliai", image: "zaidimu-pulteliai.jpg" },
   { icon: "🕹️", name: "Žaidimų konsolės ir žaidimai", image: "zaidimu-konsoles.png" },
-  { icon: "🥽", name: "Virtuali realybė (VR)", image: "vr.png" },
-  { icon: "📦", name: "Kita", image: "kita.png" },
+  { icon: "🥽", name: "Virtuali realybė (VR)", image: "vr.jpg" },
+  { icon: "📦", name: "Kita", image: "kita.jpg" },
 ];
 const categoryIcons: Record<string, string> = Object.fromEntries(categories.map((c) => [c.name, c.icon]));
 const ONLINE_THRESHOLD_MS = 60 * 1000;
