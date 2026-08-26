@@ -1535,8 +1535,20 @@ export default function Home() {
               {search && ` · paieška "${search}"`}
             </h2>
           </div>
-          {loading ? (
-            <p className="text-sm text-[#6B7280]">Kraunama...</p>
+                   {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-3">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <div key={i} className="bg-white border border-[#E4E7EE] rounded-lg overflow-hidden animate-pulse">
+                  <div className="h-48 md:h-24 bg-[#F0F1F6]" />
+                  <div className="p-3 md:p-2.5 flex flex-col gap-2">
+                    <div className="h-3 bg-[#F0F1F6] rounded w-4/5" />
+                    <div className="h-2.5 bg-[#F0F1F6] rounded w-2/5" />
+                    <div className="h-4 bg-[#F0F1F6] rounded w-1/3 mt-1" />
+                    <div className="h-2.5 bg-[#F0F1F6] rounded w-3/5" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : filtered.length === 0 ? (
             <p className="text-sm text-[#6B7280]">Pagal pasirinktus filtrus skelbimų nerasta.</p>
           ) : (
