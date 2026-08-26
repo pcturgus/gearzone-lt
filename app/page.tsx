@@ -1308,7 +1308,7 @@ export default function Home() {
                 <div
                   key={p.id}
                   onClick={() => openProduct(p)}
-                  className={`bg-white border border-[#E4E7EE] rounded-lg overflow-hidden cursor-pointer transition-all hover:shadow-md ${
+                  className={`bg-white border border-[#E4E7EE] rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:border-[#5B4FE5]/50 hover:shadow-[0_0_16px_rgba(91,79,229,0.35)] ${
                     p.status === "parduota" ? "opacity-60" : ""
                   }`}
                 >
