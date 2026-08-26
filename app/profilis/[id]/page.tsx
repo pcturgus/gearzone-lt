@@ -22,6 +22,14 @@ const categoryImages: Record<string, string> = {
   "Monitoriai": "monitoriai.png",
   "Kėdės ir stalai": "kedes-stalai.png",
   "Tinklo įranga": "tinklo-iranga.png",
+  "Mikrofonai ir transliavimo įranga": "mikrofonai-transliavimas.png",
+  "Stacionarūs kompiuteriai (PC)": "stacionarus-kompiuteriai.png",
+  "Nešiojamas kompiuteris": "nesiojami-kompiuteriai.png",
+  "Kolonėlės": "koloneles.png",
+  "Žaidimų pulteliai": "zaidimu-pulteliai.png",
+  "Žaidimų konsolės ir žaidimai": "zaidimu-konsoles.png",
+  "Virtuali realybė (VR)": "vr.png",
+  "Kita": "kita.png",
 };
 
 type Profile = {
