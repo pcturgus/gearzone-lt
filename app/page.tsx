@@ -742,11 +742,15 @@ export default function Home() {
     setUploadTouched(true);
     setUploadError("");
 
-    if (!uploadTitle.trim() || !uploadCategory || !uploadPrice || !uploadCondition || !uploadCity) {
+       if (!uploadTitle.trim() || !uploadCategory || !uploadPrice || !uploadCondition || !uploadCity) {
       setUploadError("Užpildyk visus privalomus laukus (pažymėtus *).");
       return;
     }
 
+    if (uploadPhotos.length === 0) {
+      setUploadError("Pridėk bent vieną prekės nuotrauką.");
+      return;
+    }
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       router.push("/prisijungti");
@@ -1757,7 +1761,7 @@ export default function Home() {
               )}
 
               <div>
-                <label className="text-xs font-bold block mb-1.5">Nuotraukos ({uploadPhotos.length}/4)</label>
+                <label className="text-xs font-bold block mb-1.5">Nuotraukos ({uploadPhotos.length}/4) *</label>
                 <div className="flex gap-2 flex-wrap">
                   {uploadPhotos.map((p, i) => (
                     <div key={i} className="relative w-20 h-20 rounded-lg overflow-hidden border border-[#E4E7EE]">
