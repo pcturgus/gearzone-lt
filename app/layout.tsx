@@ -13,11 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "PCturgus.lt – Kompiuterio dalių skelbimų platforma",
-  description: "Pirk ir parduok naudotus bei naujus kompiuterio komponentus Lietuvoje – vaizdo plokštes, procesorius, klaviatūras, peles ir daugiau. Susirask pirkėją ar pardavėją tiesiogiai.",
+  title: "PCturgus.lt – Kompiuterių dalių ir periferijos skelbimų platforma",
+  description: "Pirk ir parduok naudotus bei naujus kompiuterio komponentus ir periferiją Lietuvoje – vaizdo plokštes, procesorius, klaviatūras, peles ir daugiau. Susirask pirkėją ar pardavėją tiesiogiai.",
   openGraph: {
-    title: "PCturgus.lt – Kompiuterio dalių skelbimų platforma",
-    description: "Pirk ir parduok naudotus bei naujus kompiuterio komponentus Lietuvoje.",
+    title: "PCturgus.lt – Kompiuterių dalių ir periferijos skelbimų platforma",
+    description: "Pirk ir parduok naudotus bei naujus kompiuterio komponentus ir periferiją Lietuvoje.",
     url: "https://pcturgus.lt",
     siteName: "PCturgus.lt",
     locale: "lt_LT",
