@@ -1134,7 +1134,7 @@ export default function Home() {
               </button>
             )}
             {isAdmin && (
-              <Link href="/admin/moderacija" className="hidden md:block relative text-white/80 hover:text-white text-lg">
+              <Link href="/admin/moderacija" className="relative text-white/80 hover:text-white text-lg">
                 🛡️
                 {pendingCount > 0 && (
                   <span className="absolute -top-1.5 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[16px] h-4 px-1 flex items-center justify-center">
@@ -1177,14 +1177,22 @@ export default function Home() {
                 )}
               </div>
             ) : (
-              <div className="hidden md:flex items-center gap-2">
-                <Link href="/prisijungti" className="text-white/90 text-sm font-semibold px-3 py-2 hover:text-white">
+              <>
+                <Link
+                  href="/prisijungti"
+                  className="md:hidden text-white/90 text-xs font-bold px-2.5 py-1.5 border border-white/25 rounded-lg whitespace-nowrap"
+                >
                   Prisijungti
                 </Link>
-                <Link href="/registracija" className="border border-white/25 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">
-                  Registruotis
-                </Link>
-              </div>
+                <div className="hidden md:flex items-center gap-2">
+                  <Link href="/prisijungti" className="text-white/90 text-sm font-semibold px-3 py-2 hover:text-white">
+                    Prisijungti
+                  </Link>
+                  <Link href="/registracija" className="border border-white/25 text-white text-sm font-bold px-4 py-2 rounded-lg hover:bg-white/10 transition-colors">
+                    Registruotis
+                  </Link>
+                </div>
+              </>
             )}
           </div>
         </div>
