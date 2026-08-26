@@ -138,6 +138,61 @@ function CategoryIcon({ c, size = "w-5 h-5" }: { c: { image: string; icon: strin
   );
 }
 
+function FilterDropdown({
+  label,
+  value,
+  options,
+  onChange,
+  isOpen,
+  onToggle,
+}: {
+  label: string;
+  value: string;
+  options: { value: string; label: string }[];
+  onChange: (v: string) => void;
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  const selectedLabel = options.find((o) => o.value === value)?.label || "";
+  return (
+    <div className="relative shrink-0">
+      <button
+        onClick={onToggle}
+        className={`flex items-center gap-1.5 bg-white border rounded-lg px-3 py-2.5 md:py-2 text-xs transition-colors ${
+          isOpen ? "border-[#5B4FE5]" : "border-[#E4E7EE]"
+        }`}
+      >
+        <span className="font-semibold text-[#6B7280]">{label}:</span>
+        <span className="font-bold">{selectedLabel}</span>
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          className={`transition-transform ${isOpen ? "rotate-180" : ""}`}
+        >
+          <path d="M6 9l6 6 6-6" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1.5 bg-white border border-[#E4E7EE] rounded-xl shadow-lg py-1.5 min-w-[200px] max-h-72 overflow-y-auto z-50">
+          {options.map((o) => (
+            <button
+              key={o.value}
+              onClick={() => onChange(o.value)}
+              className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                o.value === value ? "bg-[#5B4FE5] text-white font-bold" : "text-[#374151] hover:bg-[#F6F7FB] font-medium"
+              }`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Home() {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -149,6 +204,7 @@ export default function Home() {
   const [conditionFilter, setConditionFilter] = useState("any");
   const [cityFilter, setCityFilter] = useState("visi");
   const [visibleCount, setVisibleCount] = useState(12);
+  const [openFilterDropdown, setOpenFilterDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1293,115 +1349,116 @@ export default function Home() {
 
       {/* FILTRŲ JUOSTA */}
       <section className="max-w-[1440px] mx-auto px-4 md:px-8 pb-4">
+        {openFilterDropdown && (
+          <div className="fixed inset-0 z-40" onClick={() => setOpenFilterDropdown(null)} />
+        )}
         <div className="flex md:flex-wrap items-center gap-2.5 overflow-x-auto md:overflow-visible pb-1 md:pb-0" style={{ WebkitOverflowScrolling: "touch" }}>
-          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2.5 md:py-2">
-            <span className="text-xs font-semibold text-[#6B7280]">Rikiuoti:</span>
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
-            >
-              <option value="newest">Naujausi</option>
-              <option value="oldest">Seniausi</option>
-              <option value="cheapest">Pigiausi</option>
-              <option value="expensive">Brangiausi</option>
-              <option value="views">Daugiausiai peržiūrų</option>
-            </select>
-          </div>
+          <FilterDropdown
+            label="Rikiuoti"
+            value={sortBy}
+            onChange={(v) => { setSortBy(v); setOpenFilterDropdown(null); }}
+            isOpen={openFilterDropdown === "sort"}
+            onToggle={() => setOpenFilterDropdown((v) => (v === "sort" ? null : "sort"))}
+            options={[
+              { value: "newest", label: "Naujausi" },
+              { value: "oldest", label: "Seniausi" },
+              { value: "cheapest", label: "Pigiausi" },
+              { value: "expensive", label: "Brangiausi" },
+              { value: "views", label: "Daugiausiai peržiūrų" },
+            ]}
+          />
 
-          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
-            <span className="text-xs font-semibold text-[#6B7280]">Kategorija:</span>
-            <select
-              value={activeCategory || "Visos"}
-              onChange={(e) => setActiveCategory(e.target.value === "Visos" ? null : e.target.value)}
-              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
-            >
-              <option value="Visos">Visos</option>
-              {categories.map((c) => (
-                <option key={c.name} value={c.name}>{c.name}</option>
-              ))}
-            </select>
-          </div>
+          <FilterDropdown
+            label="Kategorija"
+            value={activeCategory || "Visos"}
+            onChange={(v) => { setActiveCategory(v === "Visos" ? null : v); setOpenFilterDropdown(null); }}
+            isOpen={openFilterDropdown === "category"}
+            onToggle={() => setOpenFilterDropdown((v) => (v === "category" ? null : "category"))}
+            options={[{ value: "Visos", label: "Visos" }, ...categories.map((c) => ({ value: c.name, label: c.name }))]}
+          />
 
-          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
-            <span className="text-xs font-semibold text-[#6B7280]">Kaina:</span>
-            <select
+          <div className="relative shrink-0 flex items-center">
+            <FilterDropdown
+              label="Kaina"
               value={priceFilter}
-              onChange={(e) => setPriceFilter(e.target.value)}
-              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
-            >
-              <option value="any">Bet kokia</option>
-              <option value="under50">Iki 50 €</option>
-              <option value="50-100">50–100 €</option>
-              <option value="100-250">100–250 €</option>
-              <option value="250-500">250–500 €</option>
-              <option value="500-1000">500–1000 €</option>
-              <option value="1000+">1000 €+</option>
-              <option value="custom">Pasirinkti kainą</option>
-            </select>
+              onChange={(v) => { setPriceFilter(v); if (v !== "custom") setOpenFilterDropdown(null); }}
+              isOpen={openFilterDropdown === "price"}
+              onToggle={() => setOpenFilterDropdown((v) => (v === "price" ? null : "price"))}
+              options={[
+                { value: "any", label: "Bet kokia" },
+                { value: "under50", label: "Iki 50 €" },
+                { value: "50-100", label: "50–100 €" },
+                { value: "100-250", label: "100–250 €" },
+                { value: "250-500", label: "250–500 €" },
+                { value: "500-1000", label: "500–1000 €" },
+                { value: "1000+", label: "1000 €+" },
+                { value: "custom", label: "Pasirinkti kainą" },
+              ]}
+            />
             {priceFilter === "custom" && (
-              <>
+              <div className="flex items-center gap-1 ml-1.5 bg-white border border-[#E4E7EE] rounded-lg px-2 py-2">
                 <input
                   type="number"
                   placeholder="Min €"
                   value={customMinPrice}
                   onChange={(e) => setCustomMinPrice(e.target.value)}
-                  className="w-16 text-xs border-l border-[#E4E7EE] pl-2 outline-none"
+                  className="w-14 text-xs outline-none"
                 />
+                <span className="text-[#E4E7EE]">|</span>
                 <input
                   type="number"
                   placeholder="Max €"
                   value={customMaxPrice}
                   onChange={(e) => setCustomMaxPrice(e.target.value)}
-                  className="w-16 text-xs border-l border-[#E4E7EE] pl-2 outline-none"
+                  className="w-14 text-xs outline-none"
                 />
-              </>
+              </div>
             )}
           </div>
 
-          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
-            <span className="text-xs font-semibold text-[#6B7280]">Būklė:</span>
-            <select
-              value={conditionFilter}
-              onChange={(e) => setConditionFilter(e.target.value)}
-              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
-            >
-              <option value="any">Bet kokia</option>
-              <option value="naujas">Nauja</option>
-              <option value="naudotas">Naudota</option>
-              <option value="atidaryta">Atidaryta / mažai naudota</option>
-              <option value="defektas">Su defektu</option>
-            </select>
-          </div>
+          <FilterDropdown
+            label="Būklė"
+            value={conditionFilter}
+            onChange={(v) => { setConditionFilter(v); setOpenFilterDropdown(null); }}
+            isOpen={openFilterDropdown === "condition"}
+            onToggle={() => setOpenFilterDropdown((v) => (v === "condition" ? null : "condition"))}
+            options={[
+              { value: "any", label: "Bet kokia" },
+              { value: "naujas", label: "Nauja" },
+              { value: "naudotas", label: "Naudota" },
+              { value: "atidaryta", label: "Atidaryta / mažai naudota" },
+              { value: "defektas", label: "Su defektu" },
+            ]}
+          />
 
-          <div className="shrink-0 flex items-center gap-1.5 bg-white border border-[#E4E7EE] rounded-lg px-3 py-2">
-            <span className="text-xs font-semibold text-[#6B7280]">Vieta:</span>
-            <select
-              value={cityFilter}
-              onChange={(e) => setCityFilter(e.target.value)}
-              className="text-xs font-bold bg-transparent outline-none cursor-pointer"
-            >
-              <option value="visi">Visi miestai</option>
-              <option value="lietuva">Visa Lietuva</option>
-              <option value="Vilnius">Vilnius</option>
-              <option value="Kaunas">Kaunas</option>
-              <option value="Klaipėda">Klaipėda</option>
-              <option value="Šiauliai">Šiauliai</option>
-              <option value="Panevėžys">Panevėžys</option>
-              <option value="Alytus">Alytus</option>
-              <option value="Marijampolė">Marijampolė</option>
-              <option value="Mažeikiai">Mažeikiai</option>
-              <option value="Jonava">Jonava</option>
-              <option value="Utena">Utena</option>
-              <option value="Kėdainiai">Kėdainiai</option>
-              <option value="Telšiai">Telšiai</option>
-              <option value="Tauragė">Tauragė</option>
-              <option value="Ukmergė">Ukmergė</option>
-              <option value="Palanga">Palanga</option>
-              <option value="Kretinga">Kretinga</option>
-              <option value="Kita">Kita</option>
-            </select>
-          </div>
+          <FilterDropdown
+            label="Vieta"
+            value={cityFilter}
+            onChange={(v) => { setCityFilter(v); setOpenFilterDropdown(null); }}
+            isOpen={openFilterDropdown === "city"}
+            onToggle={() => setOpenFilterDropdown((v) => (v === "city" ? null : "city"))}
+            options={[
+              { value: "visi", label: "Visi miestai" },
+              { value: "lietuva", label: "Visa Lietuva" },
+              { value: "Vilnius", label: "Vilnius" },
+              { value: "Kaunas", label: "Kaunas" },
+              { value: "Klaipėda", label: "Klaipėda" },
+              { value: "Šiauliai", label: "Šiauliai" },
+              { value: "Panevėžys", label: "Panevėžys" },
+              { value: "Alytus", label: "Alytus" },
+              { value: "Marijampolė", label: "Marijampolė" },
+              { value: "Mažeikiai", label: "Mažeikiai" },
+              { value: "Jonava", label: "Jonava" },
+              { value: "Utena", label: "Utena" },
+              { value: "Kėdainiai", label: "Kėdainiai" },
+              { value: "Telšiai", label: "Telšiai" },
+              { value: "Tauragė", label: "Tauragė" },
+              { value: "Ukmergė", label: "Ukmergė" },
+              { value: "Palanga", label: "Palanga" },
+              { value: "Kretinga", label: "Kretinga" },
+              { value: "Kita", label: "Kita" },
+            ]}
+          />
         </div>
       </section>
 
