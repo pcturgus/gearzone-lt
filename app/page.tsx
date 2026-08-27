@@ -2641,7 +2641,7 @@ export default function Home() {
         )}
       </div>
 
-      {/* FOOTER */}
+          {/* FOOTER */}
       <footer className="hidden md:flex items-center justify-between max-w-[1440px] mx-auto px-8 py-6 text-xs text-[#9CA3AF] border-t border-[#E4E7EE] mt-6">
         <span>© 2026 PCturgus.lt</span>
         <div className="flex items-center gap-5">
@@ -2649,6 +2649,16 @@ export default function Home() {
           <Link href="/privatumo-politika" className="hover:text-[#5B4FE5]">Privatumo politika</Link>
           <Link href="/kontaktai" className="hover:text-[#5B4FE5]">Kontaktai</Link>
         </div>
+      </footer>
+
+      {/* FOOTER - MOBILE */}
+      <footer className="md:hidden flex flex-col items-center gap-2 px-4 py-5 text-xs text-[#9CA3AF] border-t border-[#E4E7EE] mt-4">
+        <div className="flex items-center gap-4 flex-wrap justify-center">
+          <Link href="/taisykles" className="hover:text-[#5B4FE5]">Taisyklės</Link>
+          <Link href="/privatumo-politika" className="hover:text-[#5B4FE5]">Privatumo politika</Link>
+          <Link href="/kontaktai" className="hover:text-[#5B4FE5]">Kontaktai</Link>
+        </div>
+        <span>© 2026 PCturgus.lt</span>
       </footer>
 
       {/* MOBILE APAČIOS NAVIGACIJA */}
