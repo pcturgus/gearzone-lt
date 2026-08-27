@@ -1340,10 +1340,10 @@ export default function Home() {
       {/* HERO */}
       <section className="max-w-[1440px] mx-auto px-4 md:px-8 py-5 md:py-8">
         <div className="bg-[#0B1220] rounded-2xl p-5 md:p-10 flex items-center justify-between overflow-hidden relative">
-          <img
+                   <img
             src="/pcturgus-logo-hero.png"
             alt=""
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-contain"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#0B1220] via-[#0B1220]/80 to-[#0B1220]/10" />
           <div className="max-w-md relative z-10">
