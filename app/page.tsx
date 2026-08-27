@@ -1555,7 +1555,7 @@ export default function Home() {
           ) : filtered.length === 0 ? (
             <p className="text-sm text-[#6B7280]">Pagal pasirinktus filtrus skelbimų nerasta.</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-3">
               {visibleProducts.map((p) => (
                 <div
                   key={p.id}
@@ -1564,7 +1564,7 @@ export default function Home() {
                     p.status === "parduota" ? "opacity-60" : ""
                   }`}
                 >
-                  <div className="h-48 md:h-24 bg-[#F0F1F6] flex items-center justify-center text-2xl relative overflow-hidden">
+                  <div className="h-28 md:h-24 bg-[#F0F1F6] flex items-center justify-center text-2xl relative overflow-hidden">
                     <StatusBadge status={p.status} />
                     {p.photos && p.photos.length > 0 ? (
                       <img src={p.photos[0]} className="w-full h-full object-cover" />
@@ -1573,23 +1573,23 @@ export default function Home() {
                     )}
                     <button
                       onClick={(e) => toggleFavorite(p, e)}
-                      className="absolute top-1.5 right-1.5 w-8 h-8 md:w-7 md:h-7 rounded-full bg-white flex items-center justify-center text-base shadow-sm"
+                      className="absolute top-1.5 right-1.5 w-6 h-6 md:w-7 md:h-7 rounded-full bg-white flex items-center justify-center text-xs md:text-base shadow-sm"
                     >
                       {favorites.has(p.id) ? <span className="text-red-500">♥</span> : "♡"}
                     </button>
                   </div>
-                  <div className="p-3 md:p-2.5">
-                    <div className="text-sm md:text-xs font-semibold mb-1 leading-snug line-clamp-2">{p.title}</div>
+                  <div className="p-2 md:p-2.5">
+                    <div className="text-xs font-semibold mb-1 leading-snug line-clamp-2">{p.title}</div>
                     {p.seller?.username && (
                       <div className="flex items-center gap-1.5 mb-1.5">
                         <UserBadge salesCount={p.seller.sales_count || 0} size="sm" />
-                        <span className="text-xs md:text-[10px] text-[#6B7280] truncate">{p.seller.username}</span>
+                        <span className="text-[10px] text-[#6B7280] truncate">{p.seller.username}</span>
                       </div>
                     )}
-                    <div className="text-base md:text-sm font-extrabold text-[#5B4FE5] mb-1.5">{p.price} €</div>
+                    <div className="text-sm md:text-sm font-extrabold text-[#5B4FE5] mb-1.5">{p.price} €</div>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs md:text-[10px] text-[#6B7280]">{p.city}</span>
-                      <span className="text-[10px] md:text-[9px] font-bold bg-[#EEF0FF] text-[#5B4FE5] px-1.5 py-0.5 rounded-full capitalize">{p.condition}</span>
+                      <span className="text-[10px] text-[#6B7280]">{p.city}</span>
+                      <span className="text-[9px] font-bold bg-[#EEF0FF] text-[#5B4FE5] px-1.5 py-0.5 rounded-full capitalize">{p.condition}</span>
                     </div>
                     <div className="text-[10px] text-[#9CA3AF] mt-1">{timeAgo(p.created_at)}</div>
                   </div>
@@ -2641,7 +2641,7 @@ export default function Home() {
         )}
       </div>
 
-          {/* FOOTER */}
+      {/* FOOTER */}
       <footer className="hidden md:flex items-center justify-between max-w-[1440px] mx-auto px-8 py-6 text-xs text-[#9CA3AF] border-t border-[#E4E7EE] mt-6">
         <span>© 2026 PCturgus.lt</span>
         <div className="flex items-center gap-5">
