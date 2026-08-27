@@ -1272,18 +1272,6 @@ export default function Home() {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-2">
-          <button
-            onClick={() => setMobileMenuOpen(false)}
-            className="w-full text-left px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
-          >
-            Kategorijos
-          </button>
-          <button
-            onClick={() => setMobileMenuOpen(false)}
-            className="w-full text-left px-3 py-3 text-sm font-semibold text-[#374151] hover:bg-[#F6F7FB] rounded-lg"
-          >
-            Skelbimai
-          </button>
           {username && (
             <>
               <button
