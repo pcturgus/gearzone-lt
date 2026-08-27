@@ -1559,8 +1559,8 @@ export default function Home() {
                 >
                   <div className="h-48 md:h-24 bg-[#F0F1F6] flex items-center justify-center text-2xl relative overflow-hidden">
                     <StatusBadge status={p.status} />
-                    {p.photos && p.photos.length > 0 ? (
-                      <img src={p.photos[0]} className="w-full h-full object-cover" />
+                                       {p.photos && p.photos.length > 0 ? (
+                      <img src={p.photos[0]} className="w-full h-full object-contain" />
                     ) : (
                       categoryIcons[p.category] || "🖥️"
                     )}
