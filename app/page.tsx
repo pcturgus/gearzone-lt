@@ -315,6 +315,7 @@ export default function Home() {
   const [uploadSubmitting, setUploadSubmitting] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [uploadTouched, setUploadTouched] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
 
   useEffect(() => {
     async function fetchProducts() {
@@ -868,7 +869,14 @@ export default function Home() {
       return;
     }
 
-    setUploadModalOpen(false);
+    await supabase.from("notifications").insert({
+      user_id: user.id,
+      from_user_id: null,
+      product_id: null,
+      message: `Skelbimas „${uploadTitle.trim()}" pateiktas! Palauk, kol administracija jį patvirtins – po patvirtinimo jis atsiras viešame sąraše.`,
+    });
+
+    setUploadSuccess(true);
   }
 
   async function handleLogout() {
@@ -1535,20 +1543,8 @@ export default function Home() {
               {search && ` · paieška "${search}"`}
             </h2>
           </div>
-                   {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-3">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="bg-white border border-[#E4E7EE] rounded-lg overflow-hidden animate-pulse">
-                  <div className="h-48 md:h-24 bg-[#F0F1F6]" />
-                  <div className="p-3 md:p-2.5 flex flex-col gap-2">
-                    <div className="h-3 bg-[#F0F1F6] rounded w-4/5" />
-                    <div className="h-2.5 bg-[#F0F1F6] rounded w-2/5" />
-                    <div className="h-4 bg-[#F0F1F6] rounded w-1/3 mt-1" />
-                    <div className="h-2.5 bg-[#F0F1F6] rounded w-3/5" />
-                  </div>
-                </div>
-              ))}
-            </div>
+          {loading ? (
+            <p className="text-sm text-[#6B7280]">Kraunama...</p>
           ) : filtered.length === 0 ? (
             <p className="text-sm text-[#6B7280]">Pagal pasirinktus filtrus skelbimų nerasta.</p>
           ) : (
@@ -1864,6 +1860,19 @@ export default function Home() {
               </button>
             </div>
 
+            {uploadSuccess ? (
+              <div className="p-6">
+                <div className="bg-[#EEF0FF] border border-[#5B4FE5]/30 text-[#5B4FE5] text-sm font-semibold rounded-xl p-4 mb-4">
+                  ✓ Skelbimas pateiktas! Palauk, kol administracija jį patvirtins – tai paprastai užtrunka neilgai. Kai patvirtins, jis atsiras viešame skelbimų sąraše, o tu gausi pranešimą 🔔.
+                </div>
+                <button
+                  onClick={() => setUploadModalOpen(false)}
+                  className="w-full bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg"
+                >
+                  Gerai, supratau
+                </button>
+              </div>
+            ) : (
             <div className="p-6 flex flex-col gap-4">
               {uploadError && (
                 <div className="bg-red-50 border border-red-200 text-red-600 text-xs font-semibold rounded-lg p-3">
@@ -2004,6 +2013,7 @@ export default function Home() {
                 {uploadSubmitting ? "Skelbiama..." : "Skelbti"}
               </button>
             </div>
+            )}
           </div>
         </div>
       )}
