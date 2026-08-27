@@ -1362,7 +1362,7 @@ export default function Home() {
               Viskas PC entuziastams.
             </h1>
             <p className="text-white/60 text-sm mb-5 md:mb-6">
-              <span className="md:hidden">Lietuvos PC komponentų skelbimų platforma – susirask pirkėją ar pardavėją ir susisiek tiesiogiai..</span>
+              <span className="md:hidden">Lietuvos PC komponentų skelbimų platforma – susirask pirkėją ar pardavėją ir susisiek tiesiogiai.</span>
               <span className="hidden md:inline">Lietuvos PC komponentų skelbimų platforma – susirask pirkėją ar pardavėją ir susisiek tiesiogiai.</span>
             </p>
             <div className="flex flex-col md:flex-row gap-3">
