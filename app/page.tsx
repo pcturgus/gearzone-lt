@@ -1339,8 +1339,8 @@ export default function Home() {
 
       {/* HERO */}
       <section className="max-w-[1440px] mx-auto px-4 md:px-8 py-5 md:py-8">
-                     <div className="bg-[#0B1220] rounded-2xl p-5 md:p-10 flex items-center justify-between overflow-hidden relative">
-                                   <img
+        <div className="bg-[#0B1220] rounded-2xl p-5 md:p-10 flex items-center justify-between overflow-hidden relative">
+          <img
             src="/pcturgus-logo-hero.png"
             alt=""
             className="absolute inset-0 w-full h-full object-fill"
@@ -1357,7 +1357,7 @@ export default function Home() {
               <span className="hidden md:inline">Lietuvos PC komponentų skelbimų platforma – susirask pirkėją ar pardavėją ir susisiek tiesiogiai.</span>
             </p>
             <div className="flex flex-col md:flex-row gap-3">
-                          <button
+              <button
                 onClick={() => {
                   const desktopInput = document.querySelector<HTMLInputElement>('header .hidden.md\\:flex input');
                   const mobileInput = document.getElementById('mobile-search-input') as HTMLInputElement | null;
@@ -1365,8 +1365,6 @@ export default function Home() {
                 }}
                 className="w-full md:w-auto bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg"
               >
-                Naršyti skelbimus
-              </button>
                 Naršyti skelbimus
               </button>
               <button onClick={openUploadModal} className="w-full md:w-auto text-center border border-white/25 text-white text-sm font-bold px-5 py-3 rounded-lg hover:bg-white/10 transition-colors">
@@ -1568,7 +1566,7 @@ export default function Home() {
                 >
                   <div className="h-48 md:h-24 bg-[#F0F1F6] flex items-center justify-center text-2xl relative overflow-hidden">
                     <StatusBadge status={p.status} />
-                                                                             {p.photos && p.photos.length > 0 ? (
+                    {p.photos && p.photos.length > 0 ? (
                       <img src={p.photos[0]} className="w-full h-full object-cover" />
                     ) : (
                       categoryIcons[p.category] || "🖥️"
