@@ -1628,7 +1628,7 @@ export default function Home() {
       {/* MODALAS - SKELBIMO DETALĖS */}
       {selected && (
         <div onClick={() => setSelected(null)} className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 md:p-6">
-                    <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-3xl w-full max-h-[92dvh] overflow-y-auto relative">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-3xl w-full max-h-[92dvh] overflow-y-auto relative">
             <button
               onClick={() => setSelected(null)}
               className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] text-[#374151] text-base flex items-center justify-center"
@@ -2659,6 +2659,7 @@ export default function Home() {
           <Link href="/taisykles" className="hover:text-[#5B4FE5]">Naudojimosi taisyklės</Link>
           <Link href="/privatumo-politika" className="hover:text-[#5B4FE5]">Privatumo politika</Link>
           <Link href="/kontaktai" className="hover:text-[#5B4FE5]">Kontaktai</Link>
+          <a href="https://www.instagram.com/pcturgus.lt" target="_blank" rel="noopener noreferrer" className="hover:text-[#5B4FE5]">Instagram</a>
         </div>
       </footer>
 
@@ -2668,6 +2669,7 @@ export default function Home() {
           <Link href="/taisykles" className="hover:text-[#5B4FE5]">Taisyklės</Link>
           <Link href="/privatumo-politika" className="hover:text-[#5B4FE5]">Privatumo politika</Link>
           <Link href="/kontaktai" className="hover:text-[#5B4FE5]">Kontaktai</Link>
+          <a href="https://www.instagram.com/pcturgus.lt" target="_blank" rel="noopener noreferrer" className="hover:text-[#5B4FE5]">Instagram</a>
         </div>
         <span>© 2026 PCturgus.lt</span>
       </footer>
