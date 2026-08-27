@@ -318,6 +318,17 @@ export default function Home() {
   const [uploadSuccess, setUploadSuccess] = useState(false);
 
   useEffect(() => {
+    if (selected) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selected]);
+
+  useEffect(() => {
     async function fetchProducts() {
       const { data, error } = await supabase
         .from("products")
