@@ -1226,7 +1226,7 @@ export default function Home() {
                 <div className="md:hidden flex items-center gap-1.5">
                   <Link
                     href="/registracija"
-                    className="text-white/90 text-xs font-bold px-2.5 py-1.5 hover:text-white whitespace-nowrap"
+                    className="text-white/90 text-xs font-bold px-2.5 py-1.5 border border-white/25 rounded-lg whitespace-nowrap"
                   >
                     Registruotis
                   </Link>
