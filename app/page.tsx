@@ -1366,16 +1366,6 @@ export default function Home() {
               <span className="hidden md:inline">Lietuvos PC komponentų skelbimų platforma – susirask pirkėją ar pardavėją ir susisiek tiesiogiai.</span>
             </p>
             <div className="flex flex-col md:flex-row gap-3">
-              <button
-                onClick={() => {
-                  const desktopInput = document.querySelector<HTMLInputElement>('header .hidden.md\\:flex input');
-                  const mobileInput = document.getElementById('mobile-search-input') as HTMLInputElement | null;
-                  (desktopInput || mobileInput)?.focus();
-                }}
-                className="w-full md:w-auto bg-[#5B4FE5] hover:bg-[#4338CA] transition-colors text-white text-sm font-bold px-5 py-3 rounded-lg"
-              >
-                Naršyti skelbimus
-              </button>
               <button onClick={openUploadModal} className="w-full md:w-auto text-center border border-white/25 text-white text-sm font-bold px-5 py-3 rounded-lg hover:bg-white/10 transition-colors">
                 + Įkelti skelbimą
               </button>
