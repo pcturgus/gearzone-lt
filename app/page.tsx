@@ -1339,7 +1339,7 @@ export default function Home() {
 
       {/* HERO */}
       <section className="max-w-[1440px] mx-auto px-4 md:px-8 py-5 md:py-8">
-                <div className="bg-[#0B1220] rounded-2xl p-5 md:p-10 flex items-center justify-between overflow-hidden relative aspect-[3/1]">
+                     <div className="bg-[#0B1220] rounded-2xl p-5 md:p-10 flex items-center justify-between overflow-hidden relative">
                            <img
             src="/pcturgus-logo-hero.png"
             alt=""
