@@ -1118,14 +1118,16 @@ export default function Home() {
       {/* HEADER */}
       <header className="sticky top-0 z-50 bg-[#0B1220] px-4 md:px-8 py-3 md:py-3.5">
         <div className="flex items-center gap-3 md:gap-6 relative">
-          <button
-            onClick={() => setMobileMenuOpen(true)}
-            className="md:hidden text-white w-9 h-9 flex items-center justify-center shrink-0"
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M4 7h16M4 12h16M4 17h16" stroke="white" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
+          {username && (
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              className="md:hidden text-white w-9 h-9 flex items-center justify-center shrink-0"
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <path d="M4 7h16M4 12h16M4 17h16" stroke="white" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+          )}
 
           <div className="flex items-center gap-2 text-white font-extrabold text-base md:text-lg shrink-0">
             <img src="/pc-logo-icon.png" alt="PCturgus.lt" className="w-7 h-7 md:w-8 md:h-8 rounded-lg object-cover" />
