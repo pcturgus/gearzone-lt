@@ -1223,12 +1223,20 @@ export default function Home() {
               </div>
             ) : (
               <>
-                <Link
-                  href="/prisijungti"
-                  className="md:hidden text-white/90 text-xs font-bold px-2.5 py-1.5 border border-white/25 rounded-lg whitespace-nowrap"
-                >
-                  Prisijungti
-                </Link>
+                <div className="md:hidden flex items-center gap-1.5">
+                  <Link
+                    href="/registracija"
+                    className="text-white/90 text-xs font-bold px-2.5 py-1.5 hover:text-white whitespace-nowrap"
+                  >
+                    Registruotis
+                  </Link>
+                  <Link
+                    href="/prisijungti"
+                    className="text-white/90 text-xs font-bold px-2.5 py-1.5 border border-white/25 rounded-lg whitespace-nowrap"
+                  >
+                    Prisijungti
+                  </Link>
+                </div>
                 <div className="hidden md:flex items-center gap-2">
                   <Link href="/prisijungti" className="text-white/90 text-sm font-semibold px-3 py-2 hover:text-white">
                     Prisijungti
