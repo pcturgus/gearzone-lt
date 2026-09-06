@@ -329,14 +329,20 @@ export default function Home() {
   }, [selected]);
 
   useEffect(() => {
-    async function fetchProducts() {
+    async function fetchProducts(attempt = 1) {
       const { data, error } = await supabase
         .from("products")
         .select(
           "id, title, price, old_price, category, condition, city, description, photos, seller_id, created_at, status, views_count, seller:profiles!products_seller_id_fkey(username, sales_count)"
         )
         .order("created_at", { ascending: false });
-      if (error) console.error("fetchProducts klaida:", error.message, error);
+      if (error) {
+        console.error("fetchProducts klaida:", error.message, error);
+        if (attempt < 3) {
+          setTimeout(() => fetchProducts(attempt + 1), 800 * attempt);
+          return;
+        }
+      }
       const normalized = (data || []).map((p: any) => ({
         ...p,
         seller: Array.isArray(p.seller) ? p.seller[0] : p.seller,
