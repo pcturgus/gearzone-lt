@@ -460,7 +460,24 @@ export default function Home() {
       console.log("Praleista - tai tavo pačio skelbimas");
       setSelected(p);
     }
+    window.history.pushState({}, "", `/skelbimai/${p.id}`);
   }
+
+  function closeProductModal() {
+    setSelected(null);
+    window.history.pushState({}, "", "/");
+  }
+
+  useEffect(() => {
+    function handlePopState() {
+      if (window.location.pathname === "/") {
+        setSelected(null);
+      }
+    }
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
+
 
   function prevPhoto(e?: React.MouseEvent) {
     e?.stopPropagation();
@@ -1062,7 +1079,7 @@ export default function Home() {
       unreadCount: 0,
     };
 
-    setSelected(null);
+    closeProductModal();
     setChatOpen(true);
     openThread(conv);
   }
@@ -1621,10 +1638,10 @@ export default function Home() {
 
       {/* MODALAS - SKELBIMO DETALĖS */}
       {selected && (
-        <div onClick={() => setSelected(null)} className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 md:p-6">
+        <div onClick={closeProductModal} className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4 md:p-6">
           <div onClick={(e) => e.stopPropagation()} className="bg-white rounded-2xl max-w-3xl w-full max-h-[92dvh] overflow-y-auto relative">
             <button
-              onClick={() => setSelected(null)}
+              onClick={closeProductModal}
               className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-[#F6F7FB] hover:bg-[#EEF0FF] text-[#374151] text-base flex items-center justify-center"
             >
               ✕
