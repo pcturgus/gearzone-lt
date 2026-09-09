@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { supabase } from "../../../lib/supabase";
 import SkelbimoDetalusClient from "./SkelbimoDetalusClient";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {
