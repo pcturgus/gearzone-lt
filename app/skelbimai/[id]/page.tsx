@@ -7,14 +7,14 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }): Promise<Metadata> {
+  const { id } = await params;
   const { data: product } = await supabase
     .from("products")
     .select("title, description, price, category, city")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
-
   if (!product) {
     return {
       title: "Skelbimas nerastas | PCturgus.lt",
